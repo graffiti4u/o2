@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/graffiti4u/o2#readme",
   "dependencies": {
+    "express": "^4.14.1",
     "underscore": "^1.8.3"
   }
 }
