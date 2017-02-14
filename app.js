@@ -7,6 +7,14 @@ app.set('view engine', 'jade');
 
 app.use(express.static('public'));
 
+app.get('/form', function(req, res){
+  res.render('form');
+});
+app.get('/form_receiver', function(req, res){
+  var title = req.query.title;
+  var description = req.query.description;
+  res.send(title + ', ' + description);
+});
 app.get('/topic/:id', function(req, res){
   // 사용자 id값에 따라 각각 다른 정보를 보이게 하기 위해 배열로 테스트하기
   var topics = [
