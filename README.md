@@ -25,3 +25,4 @@
 022. Express, 템플릿 엔진 3 : Jade의 문법
 023. Express, URL을 이용한 정보의 전달 1 : 쿼리스트링 소개
 024. Express, URL을 이용한 정보의 전달 2 : query 객체 사용법
+025. Express, URL을 이요한 정보의 전달 3 : query 객체의 이용
