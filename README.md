@@ -30,3 +30,4 @@
 027. Express, POST 방식을 이용한 정보의 전달 1
 028. Express, POST 방식을 이용한 정보의 전달 2 : form
 029. Express, POST 방식을 이용한 정보의 전달 3 : POST
+030. Express, POST 방식을 이용한 정보의 전달 4 : GET과 POST 용도
