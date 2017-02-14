@@ -7,6 +7,9 @@ app.set('view engine', 'jade');
 
 app.use(express.static('public'));
 
+app.get('/topic', function(req, res){
+  res.send(req.query.id + ',' + req.query.name);
+});
 app.get('/template', function(req, res){
   res.render('temp', {time:Date(), _title:'Jade'});
 });
