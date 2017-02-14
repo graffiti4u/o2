@@ -27,3 +27,4 @@
 024. Express, URL을 이용한 정보의 전달 2 : query 객체 사용법
 025. Express, URL을 이용한 정보의 전달 3 : query 객체의 이용
 026. Express, URL을 이용한 정보의 전달 4 : 시멘틱 URL
+027. Express, POST 방식을 이용한 정보의 전달 1
