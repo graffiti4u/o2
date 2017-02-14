@@ -7,7 +7,7 @@ app.set('view engine', 'jade');
 
 app.use(express.static('public'));
 
-app.get('/topic', function(req, res){
+app.get('/topic/:id', function(req, res){
   // 사용자 id값에 따라 각각 다른 정보를 보이게 하기 위해 배열로 테스트하기
   var topics = [
     'javascript is ...',
@@ -18,9 +18,12 @@ app.get('/topic', function(req, res){
     <a href="/topic?id=0">javascript</a><br>
     <a href="/topic?id=1">Nodejs</a><br>
     <a href="/topic?id=2">Express</a><br><br>
-    ${topics[req.query.id]}
+    ${topics[req.params.id]}
   `;
   res.send(output);
+});
+app.get('/topic/:id/:mode', function(req, res){
+  res.send(req.params.id + ',' + req.params.mode);
 });
 app.get('/template', function(req, res){
   res.render('temp', {time:Date(), _title:'Jade'});
