@@ -14,12 +14,29 @@ app.get('/topic/new', function(req, res){
 });
 app.get('/topic', function(req, res){
   fs.readdir('data', function(err, files){
-  // readdir : 특정 디렉토리의 파일이름을 배열로 리턴해 준다.
     if(err){
       console.log(err);
       res.status(500).send('Internal Server Error');
     }
     res.render('view', {topics: files});
+  });
+});
+app.get('/topic/:id', function(req, res){
+  var id = req.params.id;
+  fs.readdir('data', function(err, files){
+  // 목록을 일단 위에 뿌려주기 위해 readdir()함수를 호출
+    if(err){
+      console.log(err);
+      res.status(500).send('Internal Server Error');
+    }
+    fs.readFile('data/' + id, 'utf8', function(err, data){
+    // 해당 파일의 실제 내용을 읽어들이기 위해 readFile() 호출
+      if(err){
+        console.log(err);
+        res.status(500).send('Internal Server Error');
+      }
+      res.render('view', {topics:files, title:id, description:data});
+    });
   });
 });
 app.post('/topic', function(req, res){
