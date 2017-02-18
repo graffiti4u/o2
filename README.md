@@ -46,3 +46,5 @@
 044. Orientdb로 웹애플리케이션 제작 1 : 소개
 045. Orientdb로 웹애플리케이션 제작 2 : 설치
 046. Orientdb로 웹애플리케이션 제작 3 : 기본 사용법
+047. Orientdb로 웹애플리케이션 제작 4 : orientjs설정
+  
