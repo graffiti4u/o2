@@ -5,11 +5,29 @@ var server = OrientDB({
   port: 2424,
   username: 'root',
   password: process.env.Orient_DB
-}); //OrientDb()함수는 서버에 설치되어진 orientDB에 접속할 수 있는 설정을 해 줌으로써 서버 접속을 가능하게 한다.
+});
 
-var db = server.use('o2');  // 데이터베이스 o2를 이용하겠다고 설정. db변수를 통해서 o2 데이터베이스를 제어할 수 있다.
-
-db.record.get('#33:0')  // 특정 레코드를 서버로 부터 얻어오는 방법.
-.then(function(record){
+var db = server.use('o2');
+/*
+db.record.get('#33:0').then(function(record){
   console.log('Loaded record: ', record);
 });
+*/
+
+// CREATE
+/* 1.
+var sql = 'SELECT FROM topic';
+db.query(sql).then(function(results){
+  console.log(results); //결과물은 배열을 리턴해 준다.
+});
+*/
+var sql = 'SELECT FROM topic WHERE @rid=:rid';
+var param = {
+  params:{  //params는 약속되어진 문법이기 때문에 그대로 사용할 것.
+    rid: '#33:0'
+  }
+};
+db.query(sql, param).then(function(results){
+  console.log(results); //결과물은 배열을 리턴해 준다.
+});
+// query()함수에는 원하는 sql을 받을 수 있고 또한 추가적으로 가변변수(:rid)를 sql에 작성하여 변수값을 함께 가져올 수도 있다.
