@@ -2,7 +2,17 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var fs = require('fs');
 var multer = require('multer');
-var upload = multer({dest: 'uploads/'}); //파일이 저장될 경로를 지정.
+var storage = multer.diskStorage({
+  destination: function(req, file, cb){ // 사용자가 전송한 파일을 어느 디렉토리에 저장할지 결정.
+    cb(null, 'uploads/');
+  },
+  filename: function(req, file, cb){  // 디렉토리에 저장할 파일이름을 어떻게 저장할지 결정.
+    cb(null, file.originalname);
+  }
+});
+// diskStorage() 함수 내부에는 객체리터럴방식의 메서드가 선언된것.
+// 함수내부에서 if문을 사용해 좀 더 디테일한 파일 관리가 가능하다는 장점이 있음.
+var upload = multer({storage: storage});  //서버에 저장되어지는 부분을 좀 더 섬세히 가공하자.
 var app = express();
 
 app.locals.pretty = true;
@@ -10,18 +20,14 @@ app.set('views', './views_file');
 app.set('view engine', 'jade');
 
 app.use(bodyParser.urlencoded({ extended: false}));
+app.use('/user', express.static('uploads'));  //이미지 업로드 폴더를 정적으로 접근하고 할 때 사용자 라우터를 지정하면서 static로 지정할 수 있다. localhost:3000/user/img_0302.jpg
 
 app.get('/upload', function(req, res){
   res.render('upload');
 });
 app.post('/upload', upload.single('userfile'), function(req, res){
-  // 미들웨어는 req객체에 file이라는 프로퍼티를 암시적으로 추가한다.
-  // single()의 인자는 폼에서 지정한 변수명을 써 준다.
-  // file 프로퍼티는 사용자가 전송한 파일에 대한 상세정보를 포함하고 있다.
   console.log(req.file);
   res.send('Uploaded.' + req.file.filename);
-  // 실제 서버에 전송되어 저장된 파일의 이름은 서버가 임의로 파일이름을 생성해 버린다.
-  // 사용자가 전송한 파일의 이름을 그대로 서버로 저장하는 방법을 생각해 보자.
 });
 app.get('/topic/new', function(req, res){
   fs.readdir('data', function(err, files){
