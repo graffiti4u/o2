@@ -1,6 +1,7 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var fs = require('fs');
+var multer = require('multer');
 var app = express();
 
 app.locals.pretty = true;
