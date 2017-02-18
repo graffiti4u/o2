@@ -10,6 +10,12 @@ app.set('view engine', 'jade');
 
 app.use(bodyParser.urlencoded({ extended: false}));
 
+app.get('/upload', function(req, res){
+  res.render('upload');
+});
+app.post('/upload', function(req, res){
+  res.send('Uploaded.');
+});
 app.get('/topic/new', function(req, res){
   // new 뷰에도 목록 리스트를 뿌리기 위해. readdir()를 불러 옴.
   fs.readdir('data', function(err, files){
