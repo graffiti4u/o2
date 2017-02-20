@@ -39,15 +39,34 @@ app.post('/upload', upload.single('userfile'), function(req, res){
   console.log(req.file);
   res.send('Uploaded.' + req.file.filename);
 });
-app.get('/topic/new', function(req, res){
-  fs.readdir('data', function(err, files){
-    if(err){
-      console.log(err);
+app.get('/topic/add', function(req, res){
+  var sql = 'SELECT FROM topic';
+  db.query(sql).then(function(topics){
+    if(topics.length === 0){
+      console.log('There is no topic record.');
       res.status(500).send('Internal Server Error');
     }
-    res.render('new', {topics:files});
+    res.render('add', {topics:topics});
   });
 });
+app.post('/topic/add', function(req, res){
+  var title = req.body.title;
+  var description = req.body.description;
+  var author = req.body.author;
+  var sql = 'INSERT INTO topic (title, description, author) VALUES (:title, :desc, :author)';
+  db.query(sql,
+    {params:{
+      title: title,
+      desc: description,
+      author: author
+    }
+  }).then(function(results){  //query 추가가 성공되었을 시 해당 결과는 배열안에 객체로 데이터가 만들어진다. 성공하였을 시 해당 topic의 내용을 보여주는 view.jade가 리다이렉트되어야 하기 때문에 results[0]['@rid']로 rid값만 추출해 내자.
+  //encodeURIComponent()함수를 사용하는 이유를 이해할 것.
+    res.redirect('/topic/' + encodeURIComponent(results[0]['@rid']));
+  });
+});
+//라우트의 순서에 따라 다른 경로를 타므로 순서에 주의.('/topic/add')
+// 위의 라우트가 없었다면 아래의 id값으로 add가 들어가 경로를 타게 됨.
 app.get(['/topic', '/topic/:id'], function(req, res){
   var sql = 'SELECT FROM topic';
   db.query(sql).then(function(topics){
@@ -63,18 +82,6 @@ app.get(['/topic', '/topic/:id'], function(req, res){
     } else {
       res.render('view', {topics:topics});
     }
-  });
-});
-
-app.post('/topic', function(req, res){
-  var title = req.body.title;
-  var description = req.body.description;
-  fs.writeFile('data/'+title, description, function(err){
-    if(err){
-      console.log(err);
-      res.status(500).send('Internal Server Error');
-    }
-    res.redirect('/topic/' + title);
   });
 });
 
