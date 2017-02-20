@@ -50,3 +50,4 @@
 048. 데이터베이스 - orientdb로 웹앱제작 5 : SELECT
 049. 데이터베이스 - orientdb로 웹앱제작 6 : INSERT & UPDATE & DELETE
 050. 데이터베이스 - orientdb로 웹앱제작 7 : 구현계획
+051. 데이터베이스 - orientdb로 웹앱제작 8 : 읽기 1 글목록
