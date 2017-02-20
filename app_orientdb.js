@@ -52,28 +52,18 @@ app.get(['/topic', '/topic/:id'], function(req, res){
   var sql = 'SELECT FROM topic';
   db.query(sql).then(function(topics){
     console.log(topics);
-    res.render('view', {topics:topics});
-  });
-  /*
-  fs.readdir('data', function(err, files){
-    if(err){
-      console.log(err);
-      res.status(500).send('Internal Server Error');
-    }
     var id = req.params.id;
     if(id){
-      fs.readFile('data/' + id, 'utf8', function(err, data){
-        if(err){
-          console.log(err);
-          res.status(500).send('Internal Server Error');
-        }
-        res.render('view', {topics:files, title:id, description:data});
+      var sql = 'SELECT FROM topic WHERE @rid = :rid';
+      db.query(sql, {params:{rid:id}}).then(function(topic){
+        console.log(topic[0]);
+        // id값에 해당되는 하나의 레코드를 호출했는데 레코드 자체가 배열로 만들어진 객체이므로 배열의 첫번째 요소를 잡아내기위해(객체) topic[0]으로 처리.
+        res.render('view', {topics:topics, topic:topic[0]});
       });
     } else {
-      res.render('view', {topics:files, title:'Welcome', description:'Hello, JavaScript for server'});
+      res.render('view', {topics:topics});
     }
   });
-  */
 });
 
 app.post('/topic', function(req, res){

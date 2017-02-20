@@ -13,7 +13,12 @@ html
           - rid = encodeURIComponent(topic['@rid']);
           a(href='/topic/' + rid)= topic.title
     article
-      h2= title
-      = description
+      //- jade의 if문을 사용하여 메인타이틀을 클릭시 Welcome이 뜨게 만들어 주었다.
+      if topic
+        h2= topic.title
+        = topic.description
+      else
+        h2 Welcome
+        | This is server side javascript tutorial.
     div
       a(href='/topic/new') new
