@@ -27,8 +27,10 @@ html
     ul
       li
         a(href='/topic/add') add
-      //- view의 edit 링크를 추가해 주고 if문으로 확인한 것은 메인타이틀을 클릭시('/topic)로 rid에 대한 정보가 없는 상태가 되는데 if조건이 없으면 rid변수를 찾게 되어 에러를 발생시키는데 edit링크는 해당 토픽에 들어와 있을 때만 적용하기 위해. 
+      //- view의 edit 링크를 추가해 주고 if문으로 확인한 것은 메인타이틀을 클릭시('/topic)로 rid에 대한 정보가 없는 상태가 되는데 if조건이 없으면 rid변수를 찾게 되어 에러를 발생시키는데 edit링크는 해당 토픽에 들어와 있을 때만 적용하기 위해.       
       if topic
+        - rid = encodeURIComponent(topic['@rid']);
         li
-          - rid = encodeURIComponent(topic['@rid']);
           a(href='/topic/'+ rid +'/edit') edit
+        li
+          a(href='/topic/'+ rid +'/delete') delete
