@@ -43,9 +43,10 @@
 041. 파일업로드 3 : multer 사용법
 042. 파일업로드 4 : multer 심화
 043. 데이터베이스 수업 소개
-044. Orientdb로 웹애플리케이션 제작 1 : 소개
-045. Orientdb로 웹애플리케이션 제작 2 : 설치
-046. Orientdb로 웹애플리케이션 제작 3 : 기본 사용법
-047. Orientdb로 웹애플리케이션 제작 4 : orientjs설정
-048. Orientdb로 웹애플리케이션 제작 5 : SELECT
-049. Orientdb로 웹애플리케이션 제작 6 : INSERT & UPDATE & DELETE
+044. 데이터베이스 - orientdb로 웹앱제작 1 : 소개
+045. 데이터베이스 - orientdb로 웹앱제작 2 : 설치
+046. 데이터베이스 - orientdb로 웹앱제작 3 : 기본 사용법
+047. 데이터베이스 - orientdb로 웹앱제작 4 : orientjs설정
+048. 데이터베이스 - orientdb로 웹앱제작 5 : SELECT
+049. 데이터베이스 - orientdb로 웹앱제작 6 : INSERT & UPDATE & DELETE
+050. 데이터베이스 - orientdb로 웹앱제작 7 : 구현계획
