@@ -1,0 +1,19 @@
+doctype html
+html
+  head
+    meta(charset='utf-8')
+  body
+    h1 
+      a(href='/topic') Server Side JavaScript
+    ul
+      each topic in topics
+        li
+          //- 보통은 topic.@rid 로 접근하지만 특수문자 @ 나 값에 있는 # 같은 특수문자가 문제가 될 수 있다. 해서 배열로 해당 프로퍼티를 불러서 사용한다.
+          //- @rid속성에 있는 #33:0처럼 #이나 : 특수기호가 URL에 포함되면 HTML 문법과 충돌이 생기는데 이것을 방지하기 위해서는 encodeURIComponent()함수를 사용.
+          - rid = encodeURIComponent(topic['@rid']);
+          a(href='/topic/' + rid)= topic.title
+    article
+      h2= title
+      = description
+    div
+      a(href='/topic/new') new

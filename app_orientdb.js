@@ -11,10 +11,22 @@ var storage = multer.diskStorage({
   }
 });
 var upload = multer({storage: storage});
+
+var OrientDB = require('orientjs');
+
+var server = OrientDB({
+  host: 'localhost',
+  port: 2424,
+  username: 'root',
+  password: process.env.Orient_DB // 비밀번호 같은경우 설정파일을 따로 만들어 로딩하거나 환경변수로 처리해서 보안에 유의해야 한다.
+});
+
+var db = server.use('o2');  // DB를 지정해 준다.
+
 var app = express();
 
 app.locals.pretty = true;
-app.set('views', './views_file');
+app.set('views', './views_orientdb');
 app.set('view engine', 'jade');
 
 app.use(bodyParser.urlencoded({ extended: false}));
@@ -37,6 +49,12 @@ app.get('/topic/new', function(req, res){
   });
 });
 app.get(['/topic', '/topic/:id'], function(req, res){
+  var sql = 'SELECT FROM topic';
+  db.query(sql).then(function(topics){
+    console.log(topics);
+    res.render('view', {topics:topics});
+  });
+  /*
   fs.readdir('data', function(err, files){
     if(err){
       console.log(err);
@@ -55,6 +73,7 @@ app.get(['/topic', '/topic/:id'], function(req, res){
       res.render('view', {topics:files, title:'Welcome', description:'Hello, JavaScript for server'});
     }
   });
+  */
 });
 
 app.post('/topic', function(req, res){
