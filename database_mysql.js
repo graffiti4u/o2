@@ -22,6 +22,7 @@ conn.query(sql, function(err, rows, fields){  // 데이터베이스에 쿼리를
 });
 */
 // 2. INSERT
+/*
 var sql = 'INSERT INTO topic (title, description, author) VALUES (?, ?, ?)';
 var params = ['Supervisor', 'Watcher', 'graffiti'];
  conn.query(sql, params, function(err, rows, fields){ //쿼리를 실행할 때 sql에서 가변변수 ?를 만들고 실제 데이터는 params 배열에 넣은 후 query의 두번째 인자로 배열변수를 넣어준다.
@@ -31,4 +32,27 @@ var params = ['Supervisor', 'Watcher', 'graffiti'];
      console.log(rows.insertId);
    }
  });
+ */
+ // 3. UPDATE
+ /*
+ var sql = 'UPDATE topic SET title=?, description=?, author=? WHERE id=?';
+ var params = ['Test1', 'Testing version', 'graffiti', 6];
+  conn.query(sql, params, function(err, rows, fields){ //쿼리를 실행할 때 sql에서 가변변수 ?를 만들고 실제 데이터는 params 배열에 넣은 후 query의 두번째 인자로 배열변수를 넣어준다.
+    if(err){
+      console.log(err);
+    } else {
+      console.log(rows);
+    }
+  });
+  */
+  // 4. DELETE
+  var sql = 'DELETE FROM topic WHERE id=?';
+  var params = [6];
+   conn.query(sql, params, function(err, rows, fields){ //쿼리를 실행할 때 sql에서 가변변수 ?를 만들고 실제 데이터는 params 배열에 넣은 후 query의 두번째 인자로 배열변수를 넣어준다.
+     if(err){
+       console.log(err);
+     } else {
+       console.log(rows);
+     }
+   });
 conn.end(); // 서버접속을 끊는다
