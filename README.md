@@ -63,4 +63,4 @@
 061. 데이터베이스 - MySQL 3 : 윈도우 설치
 062. 데이터베이스 - MySQL 3.1 : 구조
 063. 데이터베이스 - MySQL 4 : MySQL 사용하기
-  터미널에서 이용하기 vs. MAMP의 phpMyAdmin에서 이용하기
+064. 데이터베이스 - MySQL 5 : UPDATE & DELETE
