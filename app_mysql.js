@@ -13,10 +13,20 @@ var storage = multer.diskStorage({
 // diskStorage() 함수 내부에는 객체리터럴방식의 메서드가 선언된것.
 // 함수내부에서 if문을 사용해 좀 더 디테일한 파일 관리가 가능하다는 장점이 있음.
 var upload = multer({storage: storage});  //서버에 저장되어지는 부분을 좀 더 섬세히 가공하자.
+
+var mysql = require('mysql');
+var conn = mysql.createConnection({ //createConnection()메서드 호출로 데이터베이스 객체를 받아온다.
+  host     : 'localhost',
+  user     : 'root',
+  password : process.env.MySQL_DB,
+  database : 'o2'
+});
+conn.connect(); // 데이터베이스에 접속한다.
+
 var app = express();
 
 app.locals.pretty = true;
-app.set('views', './views_file');
+app.set('views', './views_mysql');
 app.set('view engine', 'jade');
 
 app.use(bodyParser.urlencoded({ extended: false}));
@@ -39,6 +49,12 @@ app.get('/topic/new', function(req, res){
   });
 });
 app.get(['/topic', '/topic/:id'], function(req, res){
+  var sql = 'SELECT id, title FROM topic';
+  conn.query(sql, function(err, topics, fields){
+    console.log(topics);
+    res.render('view', {topics:topics});  // view파일로 전달되어질 결과물은 객체로 전달되어짐.
+  });
+  /*
   fs.readdir('data', function(err, files){
     if(err){
       console.log(err);
@@ -57,6 +73,7 @@ app.get(['/topic', '/topic/:id'], function(req, res){
       res.render('view', {topics:files, title:'Welcome', description:'Hello, JavaScript for server'});
     }
   });
+  */
 });
 
 app.post('/topic', function(req, res){

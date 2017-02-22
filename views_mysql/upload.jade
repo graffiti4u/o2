@@ -1,0 +1,9 @@
+doctype html
+html
+  head
+    meta(charset='utf-8')
+  body
+    //- 사용자가 파일을 전송할 시에는 enctype을 꼭 잡아줘야 함.
+    form(action='upload' method='post' enctype='multipart/form-data')
+      input(type='file' name='userfile')
+      input(type='submit')
