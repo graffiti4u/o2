@@ -39,13 +39,29 @@ app.post('/upload', upload.single('userfile'), function(req, res){
   console.log(req.file);
   res.send('Uploaded.' + req.file.filename);
 });
-app.get('/topic/new', function(req, res){
-  fs.readdir('data', function(err, files){
+
+app.get('/topic/add', function(req, res){
+  var sql = 'SELECT id, title FROM topic';
+  conn.query(sql, function(err, topics, fields){
     if(err){
       console.log(err);
       res.status(500).send('Internal Server Error');
     }
-    res.render('new', {topics:files});
+    res.render('add', {topics:topics});
+  });
+});
+app.post('/topic/add', function(req, res){
+  var title = req.body.title;
+  var description = req.body.description;
+  var author = req.body.author;
+  var sql = 'INSERT INTO topic (title, description, author) VALUES (?, ?, ?)';
+  conn.query(sql, [title, description, author], function(err, result, fields){
+    if(err){
+      console.log(err);
+      res.status(500).send('Internal Server Error');
+    } else {
+      res.redirect('/topic/' +result.insertId);
+    }
   });
 });
 app.get(['/topic', '/topic/:id'], function(req, res){
@@ -64,18 +80,6 @@ app.get(['/topic', '/topic/:id'], function(req, res){
     } else {
       res.render('view', {topics:topics});  // view파일로 전달되어질 결과물은 객체로 전달되어짐.
     }
-  });
-});
-
-app.post('/topic', function(req, res){
-  var title = req.body.title;
-  var description = req.body.description;
-  fs.writeFile('data/'+title, description, function(err){
-    if(err){
-      console.log(err);
-      res.status(500).send('Internal Server Error');
-    }
-    res.redirect('/topic/' + title);
   });
 });
 
