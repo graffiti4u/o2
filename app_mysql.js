@@ -51,29 +51,20 @@ app.get('/topic/new', function(req, res){
 app.get(['/topic', '/topic/:id'], function(req, res){
   var sql = 'SELECT id, title FROM topic';
   conn.query(sql, function(err, topics, fields){
-    console.log(topics);
-    res.render('view', {topics:topics});  // view파일로 전달되어질 결과물은 객체로 전달되어짐.
-  });
-  /*
-  fs.readdir('data', function(err, files){
-    if(err){
-      console.log(err);
-      res.status(500).send('Internal Server Error');
-    }
     var id = req.params.id;
     if(id){
-      fs.readFile('data/' + id, 'utf8', function(err, data){
+      var sql = 'SELECT * FROM topic WHERE id=?';
+      conn.query(sql, [id], function(err, topic, fields){
         if(err){
           console.log(err);
           res.status(500).send('Internal Server Error');
         }
-        res.render('view', {topics:files, title:id, description:data});
+        res.render('view', {topics:topics, topic: topic[0]});
       });
     } else {
-      res.render('view', {topics:files, title:'Welcome', description:'Hello, JavaScript for server'});
+      res.render('view', {topics:topics});  // view파일로 전달되어질 결과물은 객체로 전달되어짐.
     }
   });
-  */
 });
 
 app.post('/topic', function(req, res){
