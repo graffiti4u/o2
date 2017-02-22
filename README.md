@@ -67,3 +67,4 @@
 065. 데이터베이스 - MySQL 6 : node-mysql 1 : 접속
 066. 데이터베이스 - MySQL 7 : node-mysql 2 : SELECT & INSERT
 067. 데이터베이스 - MySQL 8 : node-mysql 2 : UPDATE & DELETE
+068. 데이터베이스 - MySQL 9 : 웹앱 제작 읽기 1 - 글목록
