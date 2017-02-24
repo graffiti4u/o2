@@ -84,6 +84,22 @@ app.get(['/topic/:id/edit'], function(req, res){
     }
   });
 });
+app.post(['/topic/:id/edit'], function(req, res){
+  var title = req.body.title;
+  var description = req.body.description;
+  var author = req.body.author;
+  var id = req.params.id;
+  var sql = 'UPDATE topic SET title=?, description=?, author=? WhERE id=?';
+  conn.query(sql, [title, description, author, id], function(err, result, fields){
+    if(err){
+      console.log(err);
+      res.status(500).send('Internal Server Error');
+    } else {
+      // console.log(result); 업데이트에 대한 결과를 먼저 확인해 보자.
+      res.redirect('/topic/' + id);
+    }
+  });
+});
 app.get(['/topic', '/topic/:id'], function(req, res){
   var sql = 'SELECT id, title FROM topic';
   conn.query(sql, function(err, topics, fields){
