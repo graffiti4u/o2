@@ -75,3 +75,4 @@
 073. 데이터베이스 - MySQL 14 : 웹앱 제작 - 삭제
 074. http
 075. cookie 1 : intro
+076. cookie 2 : counter
