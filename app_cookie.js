@@ -7,7 +7,8 @@ app.use(cookieParser());  //쿠키를 사용하기 위해 cookieParser 미들웨
 // 데이터베이스 대용으로 쿠키로 보내고자 하는 데이터를 객체 샘플로 생성.
 var products = {
   1: {title: 'The history of web 1'},
-  2: {title: 'The next web'}
+  2: {title: 'The next web'},
+  3: {title: 'The history of web 2'}
 };
 app.get('/products', function(req, res){
   var output = '';
@@ -21,6 +22,29 @@ app.get('/products', function(req, res){
   }
   res.send(`<h1>Products</h1><ul>${output}</ul>
     <a href="/cart">Cart</a>`);
+});
+/* 사용자의 브라우져에 저장할 데이터를 어떤 형식으로 저장할지를 정함.
+cart = {
+  제품아이디 : 제품개수
+  1:1,
+  2:1,
+  3:0 ==> cart에 한번도 등록되지 않은 id일 경우를 생각.
+}
+*/
+app.get('/cart/:id', function(req, res){
+  var id = req.params.id;
+  if(req.cookies.cart){
+    var cart = req.cookies.cart;
+  } else {
+    var cart = {};
+  }
+  if(!cart[id]){  //cart에 한번도 등록되지 않은 id일 경우를 생각.
+    cart[id] = 0;
+  }
+  cart[id] = parseInt(cart[id]) + 1;
+  res.cookie('cart', cart);
+  console.log(cart);
+  res.redirect('/cart');
 });
 
 app.get('/count', function(req, res){
