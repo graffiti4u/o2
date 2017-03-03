@@ -46,6 +46,22 @@ app.get('/cart/:id', function(req, res){
   console.log(cart);
   res.redirect('/cart');
 });
+app.get('/cart', function(req, res){
+  var cart = req.cookies.cart;  //사용자가 보낸 cart에 대한 쿠키값을 받는다.
+  if(!cart){
+    res.send('Empty!');
+  } else {
+    var output = '';
+    for(var id in cart){  //cart변수는 객체를 담고 있는 데이터이므로 각각의 객체를 추출하기 위해 for in
+      output += `<li>${products[id].title} (${cart[id]})</li>`
+    }
+  }
+  res.send(`
+    <h1>Cart</h1>
+    <ul>${output}</ul>
+    <a href="/products">Products List</a>
+    `);
+});
 
 app.get('/count', function(req, res){
   var count = 0;
