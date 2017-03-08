@@ -54,7 +54,8 @@ app.get('/cart', function(req, res){
   } else {
     var output = '';
     for(var id in cart){  //cart변수는 객체를 담고 있는 데이터이므로 각각의 객체를 추출하기 위해 for in
-      output += `<li>${products[id].title} (${cart[id]})</li>`
+      output += `<li>${products[id].title} (${cart[id]}) <a href="/cart/${id}/delete">delete</a></li>
+      `
     }
   }
   res.send(`
@@ -62,6 +63,13 @@ app.get('/cart', function(req, res){
     <ul>${output}</ul>
     <a href="/products">Products List</a>
     `);
+});
+app.get('/cart/:id/delete', function(req, res){
+  var id = req.params.id;
+  var cart = req.signedCookies.cart;  // 쿠키 파싱시 암호화작업을 유지해야 한다.
+  cart[id] = undefined;
+  res.cookie('cart', cart, {signed: true});
+  res.redirect('/cart');
 });
 
 app.get('/count', function(req, res){
