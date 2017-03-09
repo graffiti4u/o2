@@ -80,3 +80,6 @@
 078. cookie 4 : shopping cart 2
 079. cookie 5 : shopping cart 3
 080. cookie 6 : cookie & security
+081. session 1 : intro
+  쿠키의 전송이 보안에 문제가 발생하므로 새로운 테크닉으로 session을 이용한다.
+  쿠키의 기본 기능(접속한 사용자의 식별자 값만 쿠키로 저장) + 서버쪽에서 쿠키관련(사용자계정, 쇼핑카트, ...) 자료를 직접 관리.

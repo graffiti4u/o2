@@ -55,7 +55,7 @@ app.get('/cart', function(req, res){
     var output = '';
     for(var id in cart){  //cart변수는 객체를 담고 있는 데이터이므로 각각의 객체를 추출하기 위해 for in
       output += `<li>${products[id].title} (${cart[id]}) <a href="/cart/${id}/delete">delete</a></li>
-      `
+      `;
     }
   }
   res.send(`
