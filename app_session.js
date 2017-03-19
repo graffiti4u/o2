@@ -22,6 +22,23 @@ app.get('/count', function(req, res){
   // req.session 에 의해 클라이언트의 쿠키에 connect.pid라는 쿠키변수가 저장되고 이 정보에 의해 서버접속시 쿠키변수값과 동일한 쿠키정보를 서버에서 찾아 데이터를 활용하게 됨.
 });
 
+app.get('/auth/login', function(req, res){
+  var output = `
+    <form action="/auth/login" method="post">
+      <p>
+        <input type="text" name="username" placeholder="username">
+      </p>
+      <p>
+        <input type="password" name="password" placeholder="password">
+      </p>
+      <p>
+        <input type="submit">
+      </p>
+    </form>
+  `;
+  res.send(output);
+});
+
 app.listen(3000, function(){
   console.log('Example app listening on port 3000!');
 });
