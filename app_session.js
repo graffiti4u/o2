@@ -24,6 +24,12 @@ app.get('/count', function(req, res){
   // req.session 에 의해 클라이언트의 쿠키에 connect.pid라는 쿠키변수가 저장되고 이 정보에 의해 서버접속시 쿠키변수값과 동일한 쿠키정보를 서버에서 찾아 데이터를 활용하게 됨.
 });
 
+app.get('/auth/logout', function(req, res){
+  delete req.session.displayName;
+  console.log(req.session); //세션정보가 삭제되었는지 확인.
+  res.redirect('/welcome');
+});
+
 app.get('/welcome', function(req, res){
   // 로그인에 성공한 상태와 로그인에 실패한 상태를 구분해 처리
   // 세션정보 확인으로 로그인 되어진 유져의 개인 정보페이지를 구현할 수 있다.
