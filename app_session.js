@@ -24,15 +24,33 @@ app.get('/count', function(req, res){
   // req.session 에 의해 클라이언트의 쿠키에 connect.pid라는 쿠키변수가 저장되고 이 정보에 의해 서버접속시 쿠키변수값과 동일한 쿠키정보를 서버에서 찾아 데이터를 활용하게 됨.
 });
 
+app.get('/welcome', function(req, res){
+  // 로그인에 성공한 상태와 로그인에 실패한 상태를 구분해 처리
+  // 세션정보 확인으로 로그인 되어진 유져의 개인 정보페이지를 구현할 수 있다.
+  if(req.session.displayName) {
+    res.send(`
+      <h1>Hello, ${req.session.displayName}</h1>
+      <a href="/auth/logout">Logout</a>
+    `);
+  } else {
+    res.send(`
+      <h1>Welcome</h1>
+      <a href="/auth/login">Login</a>
+    `);
+  }
+});
+
 app.post('/auth/login', function(req, res){
   var user = {
     username: 'egoing',
-    password: '111'
+    password: '111',
+    displayName: 'Eging'
   };
   var uname = req.body.username;
   var pwd = req.body.password;
   // 로그인(id, password)을 처리하는 로직을 넣는데 보통 DB를 사용하지만 이번 예제에서는 객체로 테스트.
   if(uname == user.username && pwd == user.password){
+    req.session.displayName = user.displayName;
     res.redirect('/welcome'); //로그인 성공시 welcome 라우터로 리다이렉션.
   } else {
     res.send('Who are you? <a href="/auth/login">login</a>');
