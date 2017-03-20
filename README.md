@@ -89,3 +89,4 @@
 087. session 7 : login 4
 088. session 8 : session store - file
 089. session 9 : session store - mysql
+090. session 10 : session store - orientdb
