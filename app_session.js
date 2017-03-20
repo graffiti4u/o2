@@ -1,7 +1,9 @@
 var express = require('express');
 var session = require('express-session');
+var bodyParser = require('body-parser');
 var app = express();
 
+app.use(bodyParser.urlencoded({ extended: false}));
 app.use(session({
   secret: 'jkdk3$6@#%&kdfkj#@4590fd',
   resave: false,
@@ -22,8 +24,24 @@ app.get('/count', function(req, res){
   // req.session 에 의해 클라이언트의 쿠키에 connect.pid라는 쿠키변수가 저장되고 이 정보에 의해 서버접속시 쿠키변수값과 동일한 쿠키정보를 서버에서 찾아 데이터를 활용하게 됨.
 });
 
+app.post('/auth/login', function(req, res){
+  var user = {
+    username: 'egoing',
+    password: '111'
+  };
+  var uname = req.body.username;
+  var pwd = req.body.password;
+  // 로그인(id, password)을 처리하는 로직을 넣는데 보통 DB를 사용하지만 이번 예제에서는 객체로 테스트.
+  if(uname == user.username && pwd == user.password){
+    res.redirect('/welcome'); //로그인 성공시 welcome 라우터로 리다이렉션.
+  } else {
+    res.send('Who are you? <a href="/auth/login">login</a>');
+  }
+});
+
 app.get('/auth/login', function(req, res){
   var output = `
+    <h1>Login</h1>
     <form action="/auth/login" method="post">
       <p>
         <input type="text" name="username" placeholder="username">
