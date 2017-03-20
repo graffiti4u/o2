@@ -1,6 +1,6 @@
 var express = require('express');
 var session = require('express-session');
-var FileStore = require('session-file-store')(session);
+var OrientoStore = require('connect-oriento')(session);
 var bodyParser = require('body-parser');
 var app = express();
 
@@ -9,7 +9,9 @@ app.use(session({
   secret: 'jkdk3$6@#%&kdfkj#@4590fd',
   resave: false,
   saveUninitialized: true,
-  store: new FileStore()
+  store: new OrientoStore({
+    server: "host=localhost&port=2424&username=root&password="+ process.env.Orient_DB + "&db=o2"
+  })
   // 세션저장소를 지정해 줄 때 미들웨어에 해당하는 옵션을 잡아주면 된다.
   // secret – 쿠키를 임의로 변조하는것을 방지하기 위한 값 입니다. 이 값을 통하여 세션을 암호화 하여 저장합니다.
   // resave – 세션을 언제나 저장할 지 (변경되지 않아도) 정하는 값입니다. express-session documentation에서는 이 값을 false 로 하는것을 권장하고 필요에 따라 true로 설정합니다.
@@ -29,8 +31,10 @@ app.get('/count', function(req, res){
 
 app.get('/auth/logout', function(req, res){
   delete req.session.displayName;
-  console.log(req.session); //세션정보가 삭제되었는지 확인.
-  res.redirect('/welcome');
+  req.session.save(function(){
+    console.log(req.session); //세션정보가 삭제되었는지 확인.
+    res.redirect('/welcome');
+  });
 });
 
 app.get('/welcome', function(req, res){
@@ -60,7 +64,10 @@ app.post('/auth/login', function(req, res){
   // 로그인(id, password)을 처리하는 로직을 넣는데 보통 DB를 사용하지만 이번 예제에서는 객체로 테스트.
   if(uname == user.username && pwd == user.password){
     req.session.displayName = user.displayName;
-    res.redirect('/welcome'); //로그인 성공시 welcome 라우터로 리다이렉션.
+    req.session.save(function(){
+      // 세션을 처리하고 바로 리다이렉션이 일어날 경우 세션작업이 완료되기 전에 리다이렉트가 될 경우가 있는데 이것을 방지하기 위해 세션이 저장된 후 콜백함수를 호출하여 시스템 안정성을 준다.
+      res.redirect('/welcome'); //로그인 성공시 welcome 라우터로 리다이렉션.
+    });
   } else {
     res.send('Who are you? <a href="/auth/login">login</a>');
   }
