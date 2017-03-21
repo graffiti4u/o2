@@ -44,9 +44,52 @@ app.get('/welcome', function(req, res){
   } else {
     res.send(`
       <h1>Welcome</h1>
-      <a href="/auth/login">Login</a>
+      <ul>
+        <li><a href="/auth/login">Login</a></li>
+        <li><a href="/auth/register">Register</a></li>
+      </ul>
     `);
   }
+});
+
+var users = [
+  // 기본적으로 테스트했던 사용자 정보를 하나 등록해 둔다.
+  {
+    username: 'egoing',
+    password: '111',
+    displayName: 'Eging'
+  }
+];
+
+app.post('/auth/register', function(req, res){
+  var user = {
+    username: req.body.username,
+    password: req.body.password,
+    displayName: req.body.displayName
+  };
+  users.push(user); // form에서 입력받은 사용자 정보를 배열에 푸쉬
+  res.send(users);
+});
+
+app.get('/auth/register', function(req, res) {
+  var output = `
+    <h1>Register</h1>
+    <form action="/auth/register" method="post">
+      <p>
+        <input type="text" name="username" placeholder="username">
+      </p>
+      <p>
+        <input type="password" name="password" placeholder="password">
+      </p>
+      <p>
+        <input type="text" name="displayName" placeholder="displayName">
+      </p>
+      <p>
+        <input type="submit">
+      </p>
+    </form>
+  `;
+  res.send(output);
 });
 
 app.post('/auth/login', function(req, res){
