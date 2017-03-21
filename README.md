@@ -91,3 +91,4 @@
 089. session 9 : session store - mysql
 090. session 10 : session store - orientdb
 091. Multi user 1 : intro
+092. Multi user 2 : register
