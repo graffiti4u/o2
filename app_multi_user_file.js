@@ -2,7 +2,7 @@ var express = require('express');
 var session = require('express-session');
 var FileStore = require('session-file-store')(session);
 var bodyParser = require('body-parser');
-var md5 = require('md5');
+var sha256 = require('sha256');
 var app = express();
 
 app.use(bodyParser.urlencoded({ extended: false}));
@@ -57,7 +57,7 @@ var users = [
   // 기본적으로 테스트했던 사용자 정보를 하나 등록해 둔다.
   {
     username: 'egoing',
-    password: '58324458a9e63df7bb284cd2248ad469', // 쉘에서 pwd와 salt를 +한 값을 만들어온다.
+    password: '03ffe7a2991eef5aba5661681c48ae5cf2c8f58ec150689f21f160b1806e37f4', // 쉘에서 pwd와 salt를 +한 값을 만들어온다.
     salt: '@kdf$k)k34kl3rfa@',
     displayName: 'Egoing'
   },
@@ -65,7 +65,7 @@ var users = [
   // 해결책 : 모든 사람에게 동일한 salt를 제공하는 것이 아니라 각기 다른 salt를 제공해 준다.
   {
     username: 'k8805',
-    password: '974f46769689b3f4b81eb22fd1ce994f', // 쉘에서 pwd와 salt를 +한 값을 만들어온다.
+    password: 'e6f6b28cf9e704388b78c84cd8e7cddd500e218bc520b136a890102e2b8b50d2', // 쉘에서 pwd와 salt를 +한 값을 만들어온다.
     salt: 'kd39023r43(@#$f)',
     displayName: 'KS'
   }
@@ -114,7 +114,7 @@ app.post('/auth/login', function(req, res){
   for(var i=0; i<users.length; i++){
     console.log(users);
     var user = users[i];
-    if(uname == user.username && md5(pwd + user.salt) == user.password){
+    if(uname == user.username && sha256(pwd + user.salt) == user.password){
       req.session.displayName = user.displayName;
       return req.session.save(function(){ //return 을 붙여줌으로써 콜백함수 안의 for문이 중단되게 함.
         res.redirect('/welcome');
