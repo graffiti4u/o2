@@ -52,13 +52,24 @@ app.get('/welcome', function(req, res){
   }
 });
 
+// 비밀번호를 암호화하기 위한 소금치기
 var users = [
   // 기본적으로 테스트했던 사용자 정보를 하나 등록해 둔다.
   {
     username: 'egoing',
-    password: '698d51a19d8a121ce581499d7b701668',
+    password: '58324458a9e63df7bb284cd2248ad469', // 쉘에서 pwd와 salt를 +한 값을 만들어온다.
+    salt: '@kdf$k)k34kl3rfa@',
     displayName: 'Egoing'
+  },
+  // 회원이 추가되었는데 공교롭게 비번이 똑같은 111이었다 치면 egoing과 k8805의 비번은 같게된다. salt 정보가 같기 때문에.
+  // 해결책 : 모든 사람에게 동일한 salt를 제공하는 것이 아니라 각기 다른 salt를 제공해 준다.
+  {
+    username: 'k8805',
+    password: '974f46769689b3f4b81eb22fd1ce994f', // 쉘에서 pwd와 salt를 +한 값을 만들어온다.
+    salt: 'kd39023r43(@#$f)',
+    displayName: 'KS'
   }
+
 ];
 
 app.post('/auth/register', function(req, res){
@@ -103,7 +114,7 @@ app.post('/auth/login', function(req, res){
   for(var i=0; i<users.length; i++){
     console.log(users);
     var user = users[i];
-    if(uname == user.username && md5(pwd) == user.password){
+    if(uname == user.username && md5(pwd + user.salt) == user.password){
       req.session.displayName = user.displayName;
       return req.session.save(function(){ //return 을 붙여줌으로써 콜백함수 안의 for문이 중단되게 함.
         res.redirect('/welcome');

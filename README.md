@@ -95,3 +95,4 @@
 093. Multi user 3 : authentication
 094. Security Password 1
 095. Security Password 2
+096. Security password 3 : salt
