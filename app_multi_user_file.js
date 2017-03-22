@@ -2,6 +2,7 @@ var express = require('express');
 var session = require('express-session');
 var FileStore = require('session-file-store')(session);
 var bodyParser = require('body-parser');
+var md5 = require('md5');
 var app = express();
 
 app.use(bodyParser.urlencoded({ extended: false}));
@@ -55,7 +56,7 @@ var users = [
   // 기본적으로 테스트했던 사용자 정보를 하나 등록해 둔다.
   {
     username: 'egoing',
-    password: '111',
+    password: '698d51a19d8a121ce581499d7b701668',
     displayName: 'Egoing'
   }
 ];
@@ -102,7 +103,7 @@ app.post('/auth/login', function(req, res){
   for(var i=0; i<users.length; i++){
     console.log(users);
     var user = users[i];
-    if(uname == user.username && pwd == user.password){
+    if(uname == user.username && md5(pwd) == user.password){
       req.session.displayName = user.displayName;
       return req.session.save(function(){ //return 을 붙여줌으로써 콜백함수 안의 for문이 중단되게 함.
         res.redirect('/welcome');
