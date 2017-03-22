@@ -29,7 +29,6 @@ app.get('/count', function(req, res){
 
 app.get('/auth/logout', function(req, res){
   delete req.session.displayName;
-  console.log(req.session); //세션정보가 삭제되었는지 확인.
   res.redirect('/welcome');
 });
 
@@ -57,7 +56,7 @@ var users = [
   {
     username: 'egoing',
     password: '111',
-    displayName: 'Eging'
+    displayName: 'Egoing'
   }
 ];
 
@@ -68,7 +67,11 @@ app.post('/auth/register', function(req, res){
     displayName: req.body.displayName
   };
   users.push(user); // form에서 입력받은 사용자 정보를 배열에 푸쉬
-  res.send(users);
+  console.log(users);
+  req.session.displayName = req.body.displayName;
+  req.session.save(function(){
+    res.redirect('/welcome');
+  });
 });
 
 app.get('/auth/register', function(req, res) {
@@ -93,20 +96,20 @@ app.get('/auth/register', function(req, res) {
 });
 
 app.post('/auth/login', function(req, res){
-  var user = {
-    username: 'egoing',
-    password: '111',
-    displayName: 'Eging'
-  };
   var uname = req.body.username;
   var pwd = req.body.password;
-  // 로그인(id, password)을 처리하는 로직을 넣는데 보통 DB를 사용하지만 이번 예제에서는 객체로 테스트.
-  if(uname == user.username && pwd == user.password){
-    req.session.displayName = user.displayName;
-    res.redirect('/welcome'); //로그인 성공시 welcome 라우터로 리다이렉션.
-  } else {
-    res.send('Who are you? <a href="/auth/login">login</a>');
+  // 사용자가 이젠 다중사용자이므로 users에 담긴 내용을 모두 확인해 봐야한다.
+  for(var i=0; i<users.length; i++){
+    console.log(users);
+    var user = users[i];
+    if(uname == user.username && pwd == user.password){
+      req.session.displayName = user.displayName;
+      return req.session.save(function(){ //return 을 붙여줌으로써 콜백함수 안의 for문이 중단되게 함.
+        res.redirect('/welcome');
+      });
+    }
   }
+  res.send('Who are you? <a href="/auth/login">login</a>');
 });
 
 app.get('/auth/login', function(req, res){
