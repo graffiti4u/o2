@@ -113,34 +113,74 @@ app.get('/auth/register', function(req, res) {
   res.send(output);
 });
 
-app.post('/auth/login', function(req, res){
-  var uname = req.body.username;
-  var pwd = req.body.password;
-  // 사용자가 이젠 다중사용자이므로 users에 담긴 내용을 모두 확인해 봐야한다.
-  for(var i=0; i<users.length; i++){
-    console.log(users);
-    var user = users[i];
-    if(uname == user.username) {
-      // retrun 문을 사용하여 hasher함수 내부의 콜백함수가 제대로 실행될 수 있게 만들어준다.
-      return hasher({password:pwd, salt:user.salt}, function(err, pass, salt, hash){
-        if(hash === user.password) {
-          req.session.displayName = user.displayName;
-          req.session.save(function(){
-            res.redirect('/welcome');
-          });
-        } else {
-          res.send('Who are you? <a href="/auth/login">login</a>');
-        }
-      });
+// 4. LocalStrategy 전략을 설정하기 위한 미들웨어 설정
+passport.use(new LocalStrategy(
+  function(username, password, done){  // LocalStrategy전략이 실행될때 실행되어지는 콜백함수 임.
+    // 5. 폼에서 입력받은 데이터를 비교하는 로직을 작성
+    var uname = username;
+    var pwd = password;
+    // 사용자가 이젠 다중사용자이므로 users에 담긴 내용을 모두 확인해 봐야한다.
+    for(var i=0; i<users.length; i++){
+      console.log(users);
+      var user = users[i];
+      if(uname == user.username) {
+        // retrun 문을 사용하여 hasher함수 내부의 콜백함수가 제대로 실행될 수 있게 만들어준다.
+        return hasher({password:pwd, salt:user.salt}, function(err, pass, salt, hash){
+          if(hash === user.password) {
+            // done메서드의 첫번째 매개변수는 로그인 과정시 에러가 발생할 때의 에러 메시지.
+            done(null, user); //done 함수에 의해 로그인 과정을 마친 사용자 정보가 req.user객체로 만들어 진다. 객체가 3과정의 successRedirect로 연결됨
+            // 아래 코딩은 필요 없어짐.
+            // req.session.displayName = user.displayName;
+            // req.session.save(function(){
+            //   res.redirect('/welcome');
+            // });
+          } else {
+            done(null, false);  // 로그인 과정이 끝났는데 실패했다는 의미. false정보가 3과정의 failureRedirect로 연결됨.
+            // res.send('Who are you? <a href="/auth/login">login</a>');
+          }
+        });
+      }
     }
-    // if(uname == user.username && sha256(pwd + user.salt) == user.password){
-    //   req.session.displayName = user.displayName;
-    //   return req.session.save(function(){ //return 을 붙여줌으로써 콜백함수 안의 for문이 중단되게 함.
-    //     res.redirect('/welcome');
-    //   });
-    // }
+    done(null, false);
+    // for문이 완료되었는데도 찾고자 하는 유저가 없었을 경우의 코드
+    // res.send('Who are you? <a href="/auth/login">login</a>');
   }
-});
+));
+
+// 3. 기존의 콜백함수 대신 미들웨어를 사용하여 passport에게 위임하는 코드 설정.
+app.post(
+  '/auth/login',
+  passport.authenticate(
+    'local',  // local 전략(strategy)이 실행되게 됨
+    { successRedirect: '/welcome',
+      failureRedirect: '/auth/login',
+      failureFlash: false //인증실패에 대한 정보를 사용자에게 메시지를 보여주고자 할때 true 사용
+      // LocalStrategy 과정에서 done()메서드의 실패시 done(null, false) 메시지를 추가할 수 있는데 그 메시지를 다음 페이지로 함께 보내고자 할 때 true 사용한다. ex. done(null, false, {message:'Incorrect username'})
+    }
+  ));
+
+// app.post('/auth/login', function(req, res){
+//   var uname = req.body.username;
+//   var pwd = req.body.password;
+//   // 사용자가 이젠 다중사용자이므로 users에 담긴 내용을 모두 확인해 봐야한다.
+//   for(var i=0; i<users.length; i++){
+//     console.log(users);
+//     var user = users[i];
+//     if(uname == user.username) {
+//       // retrun 문을 사용하여 hasher함수 내부의 콜백함수가 제대로 실행될 수 있게 만들어준다.
+//       return hasher({password:pwd, salt:user.salt}, function(err, pass, salt, hash){
+//         if(hash === user.password) {
+//           req.session.displayName = user.displayName;
+//           req.session.save(function(){
+//             res.redirect('/welcome');
+//           });
+//         } else {
+//           res.send('Who are you? <a href="/auth/login">login</a>');
+//         }
+//       });
+//     }
+//   }
+// });
 
 app.get('/auth/login', function(req, res){
   var output = `
