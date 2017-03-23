@@ -104,3 +104,4 @@
 102. Passportjs 3 : route
 103. Passportjs 4 : serialize
 104. Passportjs 5 : logout
+105. Passportjs 6 : review
