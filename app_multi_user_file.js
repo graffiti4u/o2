@@ -1,3 +1,6 @@
+// todo 해결법
+/*jshint loopfunc: true */
+
 var express = require('express');
 var session = require('express-session');
 var FileStore = require('session-file-store')(session);
@@ -111,7 +114,6 @@ app.post('/auth/login', function(req, res){
     console.log(users);
     var user = users[i];
     if(uname == user.username) {
-      // TODO: 자바스크립트 경고를 해결하는 방법 연구할 것.
       // retrun 문을 사용하여 hasher함수 내부의 콜백함수가 제대로 실행될 수 있게 만들어준다.
       return hasher({password:pwd, salt:user.salt}, function(err, pass, salt, hash){
         if(hash === user.password) {
