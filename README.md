@@ -100,3 +100,4 @@
 098. Security Password 5
 099. Security Password 6 : register
 100. Passportjs 1 : intro
+101. Passportjs 2 : configure
