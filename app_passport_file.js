@@ -10,6 +10,7 @@ var hasher = bkfd2Password();
 // 1. 모듈 설정
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
+var FacebookStrategy = require('passport-facebook').Strategy;
 
 var app = express();
 

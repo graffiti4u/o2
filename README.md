@@ -106,3 +106,4 @@
 104. Passportjs 5 : logout
 105. Passportjs 6 : review
 106. Federation authentication 1 : intro
+107. Federation authentication 2 : facebook
