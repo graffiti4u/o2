@@ -105,3 +105,4 @@
 103. Passportjs 4 : serialize
 104. Passportjs 5 : logout
 105. Passportjs 6 : review
+106. Federation authentication 1 : intro
