@@ -7,6 +7,9 @@ var FileStore = require('session-file-store')(session);
 var bodyParser = require('body-parser');
 var bkfd2Password = require("pbkdf2-password");
 var hasher = bkfd2Password();
+// 1. 모듈 설정
+var passport = require('passport');
+var LocalStrategy = require('passport-local').Strategy;
 
 var app = express();
 
@@ -22,6 +25,10 @@ app.use(session({
   // saveUninitialized – 세션이 저장되기 전에 uninitialized 상태로 미리 만들어서 저장합니다.
   // , cookie: { secure: true } proxy를 이용한 https 프로토콜을 사용시 세션을 이용하는 방법 추후 스터디.
 }));
+
+// 2. 미들웨어 설정
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.get('/count', function(req, res){
   if(req.session.count) {
