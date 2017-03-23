@@ -102,3 +102,4 @@
 100. Passportjs 1 : intro
 101. Passportjs 2 : configure
 102. Passportjs 3 : route
+103. Passportjs 4 : serialize

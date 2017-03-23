@@ -113,6 +113,26 @@ app.get('/auth/register', function(req, res) {
   res.send(output);
 });
 
+// 6. 5번과정의 done함수가 실행되면 다음으로 session 설정과정 진행.
+// 5과정에서 실행되어지는 done(null, user) 메서드에 의해 전달되어지는 user객체를 콜백함수에서 그대로 사용할 수 있다.
+passport.serializeUser(function(user, done) {
+  console.log('serializeUser : ', user);
+  done(null, user.username); // 로그인 인증확인에 성공한 유저에 대한 고유 식별자(보통 id값을 사용)를 가지고 세션에 등록됨.(username이 세션 데이터로 저장되고 있음.)
+  // 예제에서는 배열데이터에서 id를 만들지 않고 username을 이용한 것임.
+});
+
+// 7. serializeUser() 메서드에 의해 세션데이터가 등록된 상태라면 위의 메서드를 실행하지 않고 deserializeUser()메서드가 실행되어짐.
+passport.deserializeUser(function(id, done) { // id는 user.username의 값을 받음.
+  // 사용자를 검색하는 과정 코딩
+  console.log('deserializeUser : ', id);
+  for(var i=0; i<users.length; i++){
+    var user = users[i];
+    if(user.username === id){
+      return done(null, user);
+    }
+  }
+});
+
 // 4. LocalStrategy 전략을 설정하기 위한 미들웨어 설정
 passport.use(new LocalStrategy(
   function(username, password, done){  // LocalStrategy전략이 실행될때 실행되어지는 콜백함수 임.
@@ -121,12 +141,12 @@ passport.use(new LocalStrategy(
     var pwd = password;
     // 사용자가 이젠 다중사용자이므로 users에 담긴 내용을 모두 확인해 봐야한다.
     for(var i=0; i<users.length; i++){
-      console.log(users);
       var user = users[i];
       if(uname == user.username) {
         // retrun 문을 사용하여 hasher함수 내부의 콜백함수가 제대로 실행될 수 있게 만들어준다.
         return hasher({password:pwd, salt:user.salt}, function(err, pass, salt, hash){
           if(hash === user.password) {
+            console.log('LocalStrategy : ', user);
             // done메서드의 첫번째 매개변수는 로그인 과정시 에러가 발생할 때의 에러 메시지.
             done(null, user); //done 함수에 의해 로그인 과정을 마친 사용자 정보가 req.user객체로 만들어 진다. 객체가 3과정의 successRedirect로 연결됨
             // 아래 코딩은 필요 없어짐.
@@ -158,29 +178,6 @@ app.post(
       // LocalStrategy 과정에서 done()메서드의 실패시 done(null, false) 메시지를 추가할 수 있는데 그 메시지를 다음 페이지로 함께 보내고자 할 때 true 사용한다. ex. done(null, false, {message:'Incorrect username'})
     }
   ));
-
-// app.post('/auth/login', function(req, res){
-//   var uname = req.body.username;
-//   var pwd = req.body.password;
-//   // 사용자가 이젠 다중사용자이므로 users에 담긴 내용을 모두 확인해 봐야한다.
-//   for(var i=0; i<users.length; i++){
-//     console.log(users);
-//     var user = users[i];
-//     if(uname == user.username) {
-//       // retrun 문을 사용하여 hasher함수 내부의 콜백함수가 제대로 실행될 수 있게 만들어준다.
-//       return hasher({password:pwd, salt:user.salt}, function(err, pass, salt, hash){
-//         if(hash === user.password) {
-//           req.session.displayName = user.displayName;
-//           req.session.save(function(){
-//             res.redirect('/welcome');
-//           });
-//         } else {
-//           res.send('Who are you? <a href="/auth/login">login</a>');
-//         }
-//       });
-//     }
-//   }
-// });
 
 app.get('/auth/login', function(req, res){
   var output = `
