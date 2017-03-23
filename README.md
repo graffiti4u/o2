@@ -103,3 +103,4 @@
 101. Passportjs 2 : configure
 102. Passportjs 3 : route
 103. Passportjs 4 : serialize
+104. Passportjs 5 : logout

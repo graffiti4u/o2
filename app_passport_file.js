@@ -41,16 +41,20 @@ app.get('/count', function(req, res){
 });
 
 app.get('/auth/logout', function(req, res){
-  delete req.session.displayName;
-  res.redirect('/welcome');
+  // 9. logout 되었을 때 passport에서 지원되는 메서드로 사용.
+  req.logout();
+  req.session.save(function(){ // 로그아웃에 의해 세션데이터를 없애는 작업이 save 되면 실행되게 설정.
+    res.redirect('/welcome');
+  });
 });
 
 app.get('/welcome', function(req, res){
   // 로그인에 성공한 상태와 로그인에 실패한 상태를 구분해 처리
   // 세션정보 확인으로 로그인 되어진 유져의 개인 정보페이지를 구현할 수 있다.
-  if(req.session.displayName) {
+  // 패스포트를 이용 유저정보에 접근한다.
+  if(req.user && req.user.displayName) {
     res.send(`
-      <h1>Hello, ${req.session.displayName}</h1>
+      <h1>Hello, ${req.user.displayName}</h1>
       <a href="/auth/logout">Logout</a>
     `);
   } else {
@@ -85,9 +89,11 @@ app.post('/auth/register', function(req, res){
     };
     users.push(user); // form에서 입력받은 사용자 정보를 배열에 푸쉬
     console.log(users);
-    req.session.displayName = req.body.displayName;
-    req.session.save(function(){
-      res.redirect('/welcome');
+    // 8. 회원가입과 동시에 로그인되어진 상태로 만들어주기 위해 passport방식의 코딩을 한다.
+    req.login(user, function(err){
+      req.session.save(function(){
+        res.redirect('/welcome');
+      });
     });
   });
 });
