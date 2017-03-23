@@ -2,7 +2,9 @@ var express = require('express');
 var session = require('express-session');
 var FileStore = require('session-file-store')(session);
 var bodyParser = require('body-parser');
-var sha256 = require('sha256');
+var bkfd2Password = require("pbkdf2-password");
+var hasher = bkfd2Password();
+
 var app = express();
 
 app.use(bodyParser.urlencoded({ extended: false}));
@@ -57,19 +59,10 @@ var users = [
   // 기본적으로 테스트했던 사용자 정보를 하나 등록해 둔다.
   {
     username: 'egoing',
-    password: '03ffe7a2991eef5aba5661681c48ae5cf2c8f58ec150689f21f160b1806e37f4', // 쉘에서 pwd와 salt를 +한 값을 만들어온다.
-    salt: '@kdf$k)k34kl3rfa@',
+    password: 'BdyQmF0yzJ97Tv3BEc23skwqUuq7aO9MpC76BD786T+EeKkNt33lX5kggkzd+QD9qJI1+eXwcLIFUAPXVzmyIZAA1ShX1z4J723m2WZ12xH0wHMKhMDm1LlQDgyktcFLRnpVwIewcOUmc5PgELFM8o9eYsK+z23MOk3mSUFP9RA=', // 패스워드 111111 로 암호화한 결과값
+    salt: '64TqkJ9gOsRGmoe9Ad8OI7gW8pMuv+yTl9M1mEqaIzUOKULdjCfCGiNABU5RyBTyFqndmrFwkl4j8UwidFUN1w==',
     displayName: 'Egoing'
-  },
-  // 회원이 추가되었는데 공교롭게 비번이 똑같은 111이었다 치면 egoing과 k8805의 비번은 같게된다. salt 정보가 같기 때문에.
-  // 해결책 : 모든 사람에게 동일한 salt를 제공하는 것이 아니라 각기 다른 salt를 제공해 준다.
-  {
-    username: 'k8805',
-    password: 'e6f6b28cf9e704388b78c84cd8e7cddd500e218bc520b136a890102e2b8b50d2', // 쉘에서 pwd와 salt를 +한 값을 만들어온다.
-    salt: 'kd39023r43(@#$f)',
-    displayName: 'KS'
   }
-
 ];
 
 app.post('/auth/register', function(req, res){
