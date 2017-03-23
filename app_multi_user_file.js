@@ -107,14 +107,27 @@ app.post('/auth/login', function(req, res){
   for(var i=0; i<users.length; i++){
     console.log(users);
     var user = users[i];
-    if(uname == user.username && sha256(pwd + user.salt) == user.password){
-      req.session.displayName = user.displayName;
-      return req.session.save(function(){ //return 을 붙여줌으로써 콜백함수 안의 for문이 중단되게 함.
-        res.redirect('/welcome');
+    if(uname == user.username) {
+      // TODO: 자바스크립트 경고를 해결하는 방법 연구할 것.
+      // retrun 문을 사용하여 hasher함수 내부의 콜백함수가 제대로 실행될 수 있게 만들어준다.
+      return hasher({password:pwd, salt:user.salt}, function(err, pass, salt, hash){
+        if(hash === user.password) {
+          req.session.displayName = user.displayName;
+          req.session.save(function(){
+            res.redirect('/welcome');
+          });
+        } else {
+          res.send('Who are you? <a href="/auth/login">login</a>');
+        }
       });
     }
+    // if(uname == user.username && sha256(pwd + user.salt) == user.password){
+    //   req.session.displayName = user.displayName;
+    //   return req.session.save(function(){ //return 을 붙여줌으로써 콜백함수 안의 for문이 중단되게 함.
+    //     res.redirect('/welcome');
+    //   });
+    // }
   }
-  res.send('Who are you? <a href="/auth/login">login</a>');
 });
 
 app.get('/auth/login', function(req, res){
