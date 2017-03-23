@@ -98,3 +98,4 @@
 096. Security password 3 : salt
 097. Security Password 4 : pbkdf2
 098. Security Password 5
+099. Security Password 6 : register

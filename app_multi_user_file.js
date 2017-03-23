@@ -66,16 +66,19 @@ var users = [
 ];
 
 app.post('/auth/register', function(req, res){
-  var user = {
-    username: req.body.username,
-    password: req.body.password,
-    displayName: req.body.displayName
-  };
-  users.push(user); // form에서 입력받은 사용자 정보를 배열에 푸쉬
-  console.log(users);
-  req.session.displayName = req.body.displayName;
-  req.session.save(function(){
-    res.redirect('/welcome');
+  hasher({password: req.body.password}, function(err, pass, salt, hash){
+    var user = {
+      username: req.body.username,
+      password: hash,
+      salt: salt,
+      displayName: req.body.displayName
+    };
+    users.push(user); // form에서 입력받은 사용자 정보를 배열에 푸쉬
+    console.log(users);
+    req.session.displayName = req.body.displayName;
+    req.session.save(function(){
+      res.redirect('/welcome');
+    });
   });
 });
 
