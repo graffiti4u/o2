@@ -112,3 +112,4 @@
 110. Federation authentication 5 : facebook permission(페이스북 세부 권한 설정)
 111. Auth orientdb 1 : intro
 112. Auth orientdb 2 : session store
+113. Auth orientdb 3 : register

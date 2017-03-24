@@ -12,6 +12,18 @@ var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var FacebookStrategy = require('passport-facebook').Strategy;
 
+// 사용자 관리를 데이터베이스로 관리하기 위해 orientdb 설정.
+var OrientDB = require('orientjs');
+
+var server = OrientDB({
+  host: 'localhost',
+  port: 2424,
+  username: 'root',
+  password: process.env.Orient_DB // 비밀번호 같은경우 설정파일을 따로 만들어 로딩하거나 환경변수로 처리해서 보안에 유의해야 한다.
+});
+
+var db = server.use('o2');  // DB를 지정해 준다.
+
 var app = express();
 
 app.use(bodyParser.urlencoded({ extended: false}));
@@ -94,14 +106,23 @@ app.post('/auth/register', function(req, res){
       salt: salt,
       displayName: req.body.displayName
     };
-    users.push(user); // form에서 입력받은 사용자 정보를 배열에 푸쉬
-    console.log(users);
-    // 8. 회원가입과 동시에 로그인되어진 상태로 만들어주기 위해 passport방식의 코딩을 한다.
-    req.login(user, function(err){
-      req.session.save(function(){
-        res.redirect('/welcome');
-      });
+    var sql = 'INSERT INTO user(authId, username, password, salt, displayName) VALUES (:authId, :username, :password, :salt, :displayName)';
+    db.query(sql, {
+      params: user
+    }).then(function(results){
+      res.redirect('/welcome');
+    }, function(error){ //프라미스에서는 첫번째 함수는 이전 처리가 정상적으로 마무리되었을 때 실행되고 만약 에러가 발생하면 두번째 함수가 실행되게 함.
+      console.log(error);
+      res.status(500);     
     });
+
+    /////////// 로그인과 관련된 부분이 처리된 후 코딩하도록 하자. //////////
+    // 8. 회원가입과 동시에 로그인되어진 상태로 만들어주기 위해 passport방식의 코딩을 한다.
+    // req.login(user, function(err){
+    //   req.session.save(function(){
+    //     res.redirect('/welcome');
+    //   });
+    // });
   });
 });
 
