@@ -110,19 +110,16 @@ app.post('/auth/register', function(req, res){
     db.query(sql, {
       params: user
     }).then(function(results){
-      res.redirect('/welcome');
+      //8. 회원가입과 동시에 로그인되어진 상태로 만들어주기 위해 passport방식의 코딩을 한다.
+      req.login(user, function(err){
+        req.session.save(function(){
+          res.redirect('/welcome');
+        });
+      });
     }, function(error){ //프라미스에서는 첫번째 함수는 이전 처리가 정상적으로 마무리되었을 때 실행되고 만약 에러가 발생하면 두번째 함수가 실행되게 함.
       console.log(error);
-      res.status(500);     
+      res.status(500);
     });
-
-    /////////// 로그인과 관련된 부분이 처리된 후 코딩하도록 하자. //////////
-    // 8. 회원가입과 동시에 로그인되어진 상태로 만들어주기 위해 passport방식의 코딩을 한다.
-    // req.login(user, function(err){
-    //   req.session.save(function(){
-    //     res.redirect('/welcome');
-    //   });
-    // });
   });
 });
 
@@ -159,14 +156,14 @@ passport.serializeUser(function(user, done) {
 passport.deserializeUser(function(id, done) { // id는 user.username의 값을 받음.
   // 사용자를 검색하는 과정 코딩
   console.log('deserializeUser : ', id);
-  for(var i=0; i<users.length; i++){
-    var user = users[i];
-    if(user.authId === id){
-      return done(null, user);
+  var sql = 'SELECT displayName FROM user WHERE authId=:authId';
+  db.query(sql, {params:{authId: id}}).then(function(results){
+    if(results.length === 0) {
+      done('There is no user.');
+    } else {
+      done(null, results[0]);
     }
-  }
-  // 페이스북으로 로그인이되면 사용자 정보는 배열로 저장되고 있고 세션정보는 파일로 저장되고 있는데 만약 이 상태에서 서버가 다운되어지는 경우가 있으면 사용자 정보는 날라가고 세션정보만 남아있기 때문에 브라우져에서는 대기상태에 걸리게 된다. 이를 해결하기 위해 에러를 뿌리기 위한 코드 추가.
-  done('There is no user');
+  });
 });
 
 // 4. LocalStrategy 전략을 설정하기 위한 미들웨어 설정
@@ -175,31 +172,29 @@ passport.use(new LocalStrategy(
     // 5. 폼에서 입력받은 데이터를 비교하는 로직을 작성
     var uname = username;
     var pwd = password;
-    // 사용자가 이젠 다중사용자이므로 users에 담긴 내용을 모두 확인해 봐야한다.
-    for(var i=0; i<users.length; i++){
-      var user = users[i];
-      if(uname == user.username) {
-        // retrun 문을 사용하여 hasher함수 내부의 콜백함수가 제대로 실행될 수 있게 만들어준다.
-        return hasher({password:pwd, salt:user.salt}, function(err, pass, salt, hash){
-          if(hash === user.password) {
-            console.log('LocalStrategy : ', user);
-            // done메서드의 첫번째 매개변수는 로그인 과정시 에러가 발생할 때의 에러 메시지.
-            done(null, user); //done 함수에 의해 로그인 과정을 마친 사용자 정보가 req.user객체로 만들어 진다. 객체가 3과정의 successRedirect로 연결됨
-            // 아래 코딩은 필요 없어짐.
-            // req.session.displayName = user.displayName;
-            // req.session.save(function(){
-            //   res.redirect('/welcome');
-            // });
-          } else {
-            done(null, false);  // 로그인 과정이 끝났는데 실패했다는 의미. false정보가 3과정의 failureRedirect로 연결됨.
-            // res.send('Who are you? <a href="/auth/login">login</a>');
-          }
-        });
+    // 데이터베이스에서 사용자 정보를 추출해내서 이용.
+    var sql = 'SELECT * FROM user WHERE authId=:authId';
+    db.query(sql, {params:{authId: 'local:'+uname}}).then(function(results){
+      var user = results[0];  // hasher함수의 내용을 그대로 사용하기 위해 배열의 첫번째 객체를 추출.
+      if(results.length === 0){
+        return done(null, false);
       }
-    }
-    done(null, false);
-    // for문이 완료되었는데도 찾고자 하는 유저가 없었을 경우의 코드
-    // res.send('Who are you? <a href="/auth/login">login</a>');
+      return hasher({password:pwd, salt:user.salt}, function(err, pass, salt, hash){
+        if(hash === user.password) {
+          console.log('LocalStrategy : ', user);
+          // done메서드의 첫번째 매개변수는 로그인 과정시 에러가 발생할 때의 에러 메시지.
+          done(null, user); //done 함수에 의해 로그인 과정을 마친 사용자 정보가 req.user객체로 만들어 진다. 객체가 3과정의 successRedirect로 연결됨
+          // 아래 코딩은 필요 없어짐.
+          // req.session.displayName = user.displayName;
+          // req.session.save(function(){
+          //   res.redirect('/welcome');
+          // });
+        } else {
+          done(null, false);  // 로그인 과정이 끝났는데 실패했다는 의미. false정보가 3과정의 failureRedirect로 연결됨.
+          // res.send('Who are you? <a href="/auth/login">login</a>');
+        }
+      });
+    });
   }
 ));
 
