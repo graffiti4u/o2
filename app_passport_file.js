@@ -174,6 +174,21 @@ passport.use(new LocalStrategy(
   }
 ));
 
+// f2. 패이스북 정책에 맞는 미들웨어 실행
+passport.use(new FacebookStrategy({
+    clientID: '586789948193727',  //FACEBOOK_APP_ID
+    clientSecret: 'a5aa7c1c3dfaa3e6652d148c2e7fd522',  //FACEBOOK_APP_SECRET
+    callbackURL: "/auth/facebook/callback"  // id값과 secret코드의 검증을 마친후 보내질 url
+  },
+  // f4. id와 secret 검증을 마치면 실행되는 콜백함수
+  function(accessToken, refreshToken, profile, done) {
+    // User.findOrCreate(..., function(err, user) {
+    //   if (err) { return done(err); }
+    //   done(null, user);
+    // });
+  }
+));
+
 // 3. 기존의 콜백함수 대신 미들웨어를 사용하여 passport에게 위임하는 코드 설정.
 app.post(
   '/auth/login',
@@ -185,6 +200,26 @@ app.post(
       // LocalStrategy 과정에서 done()메서드의 실패시 done(null, false) 메시지를 추가할 수 있는데 그 메시지를 다음 페이지로 함께 보내고자 할 때 true 사용한다. ex. done(null, false, {message:'Incorrect username'})
     }
   ));
+
+// f1. 라우팅을 받을
+app.get(
+  '/auth/facebook',
+  passport.authenticate(
+    'facebook'
+  )
+);
+
+// f3. 미들웨어에서 인증절차를 마치면 실행될 라우팅
+app.get(
+  '/auth/facebook/callback',
+  passport.authenticate(
+    'facebook',
+    {
+      successRedirect: '/Welcome',
+      failureRedirect: '/auth/login'
+    }
+  )
+);
 
 app.get('/auth/login', function(req, res){
   var output = `
@@ -200,6 +235,7 @@ app.get('/auth/login', function(req, res){
         <input type="submit">
       </p>
     </form>
+    <a href="/auth/facebook">facebook</a>
   `;
   res.send(output);
 });
