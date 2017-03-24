@@ -114,3 +114,4 @@
 112. Auth orientdb 2 : session store
 113. Auth orientdb 3 : register
 113. Auth orientdb 4 : login
+114. Auth orientdb 5 : federation authentication

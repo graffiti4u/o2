@@ -211,19 +211,25 @@ passport.use(new FacebookStrategy({
     console.log('FacebookStrategy', profile); // 프로파일을 확인해 보면 id값이 확인되는데 이 값이 패이스북의 고유식별자 id임.
     var authId = 'facebook:' + profile.id;
     // 사용자가 이미 등록되어진 사용자인지 아닌지를 확인하고 처리하자.
-    for(var i=0; i<users.length; i++){
-      var user = users[i];
-      if(user.authId === authId){
-        return done(null, user);
+    var sql = 'SELECT FROM user WHERE authId = :authId';
+    db.query(sql, {params: {authId:authId}}).then(function(results){
+      if(results.length === 0) {
+        var newUser = {
+          'authId': authId,
+          'displayName': profile.displayName,
+        //'email': profile.emails[0].value  // 추가적인 정보를 더 넣어서 관리할 수도 있다.
+        };
+        var sql = 'INSERT INTO user (authId, displayName, email) VALUES (:authId, :displayName, :email)';
+        db.query(sql, {params: newUser}).then(function(results){
+          done(null, newUser);
+        }, function(error){
+          console.log(error);
+          done('Error');
+        });
+      } else {
+        return done(null, results[0]);
       }
-    }
-    var newUser = {
-      'authId': authId,
-      'displayName': profile.displayName,
-    //'email': profile.emails[0].value  // 추가적인 정보를 더 넣어서 관리할 수도 있다.
-    };
-    users.push(newUser);
-    done(null, newUser);
+    });
   }
 ));
 
