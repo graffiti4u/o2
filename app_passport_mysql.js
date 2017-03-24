@@ -84,19 +84,6 @@ app.get('/welcome', function(req, res){
   }
 });
 
-// 비밀번호를 암호화하기 위한 소금치기
-var users = [
-  // 기본적으로 테스트했던 사용자 정보를 하나 등록해 둔다.
-  {
-    // 패이스북 구조와 동일하게 만들기 위해 속성 추가.
-    authId: 'local:egoing',
-    username: 'egoing',
-    password: 'BdyQmF0yzJ97Tv3BEc23skwqUuq7aO9MpC76BD786T+EeKkNt33lX5kggkzd+QD9qJI1+eXwcLIFUAPXVzmyIZAA1ShX1z4J723m2WZ12xH0wHMKhMDm1LlQDgyktcFLRnpVwIewcOUmc5PgELFM8o9eYsK+z23MOk3mSUFP9RA=', // 패스워드 111111 로 암호화한 결과값
-    salt: '64TqkJ9gOsRGmoe9Ad8OI7gW8pMuv+yTl9M1mEqaIzUOKULdjCfCGiNABU5RyBTyFqndmrFwkl4j8UwidFUN1w==',
-    displayName: 'Egoing'
-  }
-];
-
 app.post('/auth/register', function(req, res){
   hasher({password: req.body.password}, function(err, pass, salt, hash){
     var user = {
@@ -214,19 +201,28 @@ passport.use(new FacebookStrategy({
     console.log('FacebookStrategy', profile); // 프로파일을 확인해 보면 id값이 확인되는데 이 값이 패이스북의 고유식별자 id임.
     var authId = 'facebook:' + profile.id;
     // 사용자가 이미 등록되어진 사용자인지 아닌지를 확인하고 처리하자.
-    for(var i=0; i<users.length; i++){
-      var user = users[i];
-      if(user.authId === authId){
-        return done(null, user);
+    var sql = 'SELECT * FROM users WHERE authId=?';
+    conn.query(sql, [authId], function(err, results){
+      if(results.length > 0){
+        done(null, results[0]);
+      } else {
+        // 사용자가 없다면
+        var newUser = {
+          'authId': authId,
+          'displayName': profile.displayName
+        //'email': profile.emails[0].value  // 추가적인 정보를 더 넣어서 관리할 수도 있다.
+        };
+        var sql = 'INSERT INTO users SET ?';
+        conn.query(sql, newUser, function(err, results){
+          if(err){
+            console.log(err);
+            done('Error');
+          } else {
+            done(null, newUser);
+          }
+        });
       }
-    }
-    var newUser = {
-      'authId': authId,
-      'displayName': profile.displayName,
-    //'email': profile.emails[0].value  // 추가적인 정보를 더 넣어서 관리할 수도 있다.
-    };
-    users.push(newUser);
-    done(null, newUser);
+    });
   }
 ));
 

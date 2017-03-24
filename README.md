@@ -119,3 +119,4 @@
 117. Auth MySQL 2 : Session store
 118. Auth MySQL 3 : register
 119. Auth MySQL 4 : login
+120. Auth MySQL 5 : federation authentication
