@@ -142,6 +142,8 @@ passport.deserializeUser(function(id, done) { // id는 user.username의 값을 �
       return done(null, user);
     }
   }
+  // 페이스북으로 로그인이되면 사용자 정보는 배열로 저장되고 있고 세션정보는 파일로 저장되고 있는데 만약 이 상태에서 서버가 다운되어지는 경우가 있으면 사용자 정보는 날라가고 세션정보만 남아있기 때문에 브라우져에서는 대기상태에 걸리게 된다. 이를 해결하기 위해 에러를 뿌리기 위한 코드 추가.
+  done('There is no user');
 });
 
 // 4. LocalStrategy 전략을 설정하기 위한 미들웨어 설정
@@ -182,11 +184,13 @@ passport.use(new LocalStrategy(
 passport.use(new FacebookStrategy({
     clientID: '586789948193727',  //FACEBOOK_APP_ID
     clientSecret: 'a5aa7c1c3dfaa3e6652d148c2e7fd522',  //FACEBOOK_APP_SECRET
-    callbackURL: "/auth/facebook/callback"  // id값과 secret코드의 검증을 마친후 보내질 url
+    callbackURL: "/auth/facebook/callback", // id값과 secret코드의 검증을 마친후 보내질 url
+    // 추가로 얻고자 하는 페이스북 정보를 주고자 할 때.
+    profileFields: ['id', 'email', 'gender', 'link', 'locale', 'name', 'timezone', 'updated_time', 'verified', 'displayName']
   },
   // f4. id와 secret 검증을 마치면 실행되는 콜백함수
   function(accessToken, refreshToken, profile, done) {
-    console.log(profile); // 프로파일을 확인해 보면 id값이 확인되는데 이 값이 패이스북의 고유식별자 id임.
+    console.log('FacebookStrategy', profile); // 프로파일을 확인해 보면 id값이 확인되는데 이 값이 패이스북의 고유식별자 id임.
     var authId = 'facebook:' + profile.id;
     // 사용자가 이미 등록되어진 사용자인지 아닌지를 확인하고 처리하자.
     for(var i=0; i<users.length; i++){
@@ -197,14 +201,11 @@ passport.use(new FacebookStrategy({
     }
     var newUser = {
       'authId': authId,
-      'displayName': profile.displayName
+      'displayName': profile.displayName,
+    //'email': profile.emails[0].value  // 추가적인 정보를 더 넣어서 관리할 수도 있다.
     };
     users.push(newUser);
     done(null, newUser);
-    // User.findOrCreate(..., function(err, user) {
-    //   if (err) { return done(err); }
-    //   done(null, user);
-    // });
   }
 ));
 
@@ -224,7 +225,9 @@ app.post(
 app.get(
   '/auth/facebook',
   passport.authenticate(
-    'facebook'
+    'facebook',
+    // 페이스북의 다른 정보를 더 가져오고 싶을때 scope를 사용
+    {scope: 'email'}
   )
 );
 
