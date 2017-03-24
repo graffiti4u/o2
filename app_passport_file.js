@@ -73,6 +73,8 @@ app.get('/welcome', function(req, res){
 var users = [
   // 기본적으로 테스트했던 사용자 정보를 하나 등록해 둔다.
   {
+    // 패이스북 구조와 동일하게 만들기 위해 속성 추가.
+    authId: 'local:egoing',
     username: 'egoing',
     password: 'BdyQmF0yzJ97Tv3BEc23skwqUuq7aO9MpC76BD786T+EeKkNt33lX5kggkzd+QD9qJI1+eXwcLIFUAPXVzmyIZAA1ShX1z4J723m2WZ12xH0wHMKhMDm1LlQDgyktcFLRnpVwIewcOUmc5PgELFM8o9eYsK+z23MOk3mSUFP9RA=', // 패스워드 111111 로 암호화한 결과값
     salt: '64TqkJ9gOsRGmoe9Ad8OI7gW8pMuv+yTl9M1mEqaIzUOKULdjCfCGiNABU5RyBTyFqndmrFwkl4j8UwidFUN1w==',
@@ -83,6 +85,8 @@ var users = [
 app.post('/auth/register', function(req, res){
   hasher({password: req.body.password}, function(err, pass, salt, hash){
     var user = {
+      // 패이스북 구조와 동일하게 만들기 위해 속성 추가.
+      authId: 'local:' + req.body.username,
       username: req.body.username,
       password: hash,
       salt: salt,
@@ -124,7 +128,7 @@ app.get('/auth/register', function(req, res) {
 // 5과정에서 실행되어지는 done(null, user) 메서드에 의해 전달되어지는 user객체를 콜백함수에서 그대로 사용할 수 있다.
 passport.serializeUser(function(user, done) {
   console.log('serializeUser : ', user);
-  done(null, user.username); // 로그인 인증확인에 성공한 유저에 대한 고유 식별자(보통 id값을 사용)를 가지고 세션에 등록됨.(username이 세션 데이터로 저장되고 있음.)
+  done(null, user.authId); // 로그인 인증확인에 성공한 유저에 대한 고유 식별자(보통 id값을 사용)를 가지고 세션에 등록됨.(username이 세션 데이터로 저장되고 있음.)
   // 예제에서는 배열데이터에서 id를 만들지 않고 username을 이용한 것임.
 });
 
@@ -134,7 +138,7 @@ passport.deserializeUser(function(id, done) { // id는 user.username의 값을 �
   console.log('deserializeUser : ', id);
   for(var i=0; i<users.length; i++){
     var user = users[i];
-    if(user.username === id){
+    if(user.authId === id){
       return done(null, user);
     }
   }
@@ -182,6 +186,21 @@ passport.use(new FacebookStrategy({
   },
   // f4. id와 secret 검증을 마치면 실행되는 콜백함수
   function(accessToken, refreshToken, profile, done) {
+    console.log(profile); // 프로파일을 확인해 보면 id값이 확인되는데 이 값이 패이스북의 고유식별자 id임.
+    var authId = 'facebook:' + profile.id;
+    // 사용자가 이미 등록되어진 사용자인지 아닌지를 확인하고 처리하자.
+    for(var i=0; i<users.length; i++){
+      var user = users[i];
+      if(user.authId === authId){
+        return done(null, user);
+      }
+    }
+    var newUser = {
+      'authId': authId,
+      'displayName': profile.displayName
+    };
+    users.push(newUser);
+    done(null, newUser);
     // User.findOrCreate(..., function(err, user) {
     //   if (err) { return done(err); }
     //   done(null, user);
