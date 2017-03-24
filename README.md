@@ -117,3 +117,4 @@
 115. Auth orientdb 5 : federation authentication
 116. Auth MySQL 1 : intro
 117. Auth MySQL 2 : Session store
+118. Auth MySQL 3 : register

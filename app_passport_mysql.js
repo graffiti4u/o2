@@ -12,6 +12,15 @@ var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var FacebookStrategy = require('passport-facebook').Strategy;
 
+var mysql = require('mysql');
+var conn = mysql.createConnection({ //createConnection()메서드 호출로 데이터베이스 객체를 받아온다.
+  host     : 'localhost',
+  user     : 'root',
+  password : process.env.MySQL_DB,
+  database : 'o2'
+});
+conn.connect(); // 데이터베이스에 접속한다.
+
 var app = express();
 
 app.use(bodyParser.urlencoded({ extended: false}));
@@ -98,14 +107,22 @@ app.post('/auth/register', function(req, res){
       salt: salt,
       displayName: req.body.displayName
     };
-    users.push(user); // form에서 입력받은 사용자 정보를 배열에 푸쉬
-    console.log(users);
-    // 8. 회원가입과 동시에 로그인되어진 상태로 만들어주기 위해 passport방식의 코딩을 한다.
-    req.login(user, function(err){
-      req.session.save(function(){
+    var sql = 'INSERT INTO users SET ?';
+    conn.query(sql, user, function(err, results){
+      if(err){
+        console.log(err);
+        res.status(500);
+      } else {
         res.redirect('/welcome');
-      });
+      }
     });
+
+    // 8. 회원가입과 동시에 로그인되어진 상태로 만들어주기 위해 passport방식의 코딩을 한다.
+    // req.login(user, function(err){
+    //   req.session.save(function(){
+    //     res.redirect('/welcome');
+    //   });
+    // });
   });
 });
 
