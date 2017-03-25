@@ -124,3 +124,12 @@
 122. jade - extends 2
 123. Create module 1
 124. Create module 2
+125. Routes separate 1
+라우트의 정리방법을 공부하자.
+app_routes.js 파일의 라우트의 갯수가 엄청나게 늘어난다고 생각해 보자
+공통성이 있는 라우트끼리 하나의 파일별로 쪼개서 관리하는 것을 생각해 보자.
+Router-level middleware
+라우터 수준 미들웨어는 응용 프로그램 수준 미들웨어와 동일한 방식으로 작동하지만 express.Router () 인스턴스에 바인딩됩니다.(이해하기)
+router.use () 및 router.METHOD () 함수를 사용하여 라우터 수준 미들웨어를 로드합니다.
+
+이렇게 코팅하는 것을 라우팅에 대한 각각의 상황을 파일로 분리할때 나타난다. ^&^ 
