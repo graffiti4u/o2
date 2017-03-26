@@ -3,6 +3,15 @@ html
   head
     meta(charset='utf-8')
   body
+    ul#account
+      if user
+        li
+          a(href='/auth/logout') Logout
+      else
+        li
+          a(href='/auth/register') Register
+        li
+          a(href='/auth/login') Login
     h1 
       a(href='/topic') Server Side JavaScript
     ul
@@ -10,3 +19,6 @@ html
         li
           a(href='/topic/' + topic.id)= topic.title
     block content
+
+
+//- 패스포트에서 로그인에 성공했을때 req객체에 user객체를 넘겨주는것을 기억하자.

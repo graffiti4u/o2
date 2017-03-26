@@ -1,14 +1,10 @@
-var express = require('express');
-var bodyParser = require('body-parser');
+// 로그인 했을 때 로그아웃 정보가 뜨지 않은 것은 세션에 대한 설정이 빠져 있었기 때문이다. 해서 세션에 대한 정보를 가지고있는 express파일을 로딩.
+var app = require('./config/mysql/express')();
 
-var app = express();
-
-app.locals.pretty = true;
-app.set('views', './views/mysql');
-app.set('view engine', 'jade');
-
-app.use(bodyParser.urlencoded({ extended: false}));
-app.use('/user', express.static('uploads'));  //이미지 업로드 폴더를 정적으로 접근하고 할 때 사용자 라우터를 지정하면서 static로 지정할 수 있다. localhost:3000/user/img_0302.jpg
+// 라우터 설정
+var passport = require('./config/mysql/passport')(app);
+var auth = require('./routes/mysql/auth')(passport);
+app.use('/auth/', auth);
 
 // 라우터 선언.
 var topic = require('./routes/mysql/topic')();
