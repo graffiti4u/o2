@@ -1,0 +1,11 @@
+extends ../layout
+block content
+  article
+    h1= 'Delete? ' + topic.title
+    //- 단순 링크 접속이 아니라 어떤 오퍼레이션을 하는 작업일 경우에는 post방식을 사용하여야 한다.
+    //- a(href='/topic/' + topic.id + '/delete') yes
+    form(action='/topic/' + topic.id + '/delete' method='post')
+      p
+        input(type='submit' value='YES')
+    a(href='/topic/' + topic.id) no
+      

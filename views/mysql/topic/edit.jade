@@ -1,0 +1,17 @@
+extends ../layout
+block content
+  article
+    form(action='/topic/' + topic.id +'/edit' method='post')
+      p
+        input(type='text' name='title' placeholder='title' value=topic.title)
+      p
+        textarea(name='description' placeholder='deseription')
+          =topic.description
+      p
+        input(type='text' name='author' placeholder='author' value=topic.author)
+      p
+        input(type='submit')
+  ul
+    li
+      a(href='/topic/add') new
+      

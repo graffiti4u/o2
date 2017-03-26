@@ -26,7 +26,7 @@ conn.connect(); // 데이터베이스에 접속한다.
 var app = express();
 
 app.locals.pretty = true;
-app.set('views', './views_mysql');
+app.set('views', './views/mysql');
 app.set('view engine', 'jade');
 
 app.use(bodyParser.urlencoded({ extended: false}));
@@ -47,7 +47,7 @@ app.get('/topic/add', function(req, res){
       console.log(err);
       res.status(500).send('Internal Server Error');
     }
-    res.render('add', {topics:topics});
+    res.render('topic/add', {topics:topics});
   });
 });
 app.post('/topic/add', function(req, res){
@@ -75,7 +75,7 @@ app.get(['/topic/:id/edit'], function(req, res){
           console.log(err);
           res.status(500).send('Internal Server Error');
         } else {
-          res.render('edit', {topics:topics, topic: topic[0]});
+          res.render('topic/edit', {topics:topics, topic: topic[0]});
         }
       });
     } else {
@@ -114,7 +114,7 @@ app.get('/topic/:id/delete', function(req, res){
           console.log('There is no id.');
           res.status(500).send('Internal Server Error');
         }
-        res.render('delete', {topics: topics, topic: topic[0]});
+        res.render('topic/delete', {topics: topics, topic: topic[0]});
       }
     });
   });
@@ -137,10 +137,10 @@ app.get(['/topic', '/topic/:id'], function(req, res){
           console.log(err);
           res.status(500).send('Internal Server Error');
         }
-        res.render('view', {topics:topics, topic: topic[0]});
+        res.render('topic/view', {topics:topics, topic: topic[0]});
       });
     } else {
-      res.render('view', {topics:topics});  // view파일로 전달되어질 결과물은 객체로 전달되어짐.
+      res.render('topic/view', {topics:topics});  // view파일로 전달되어질 결과물은 객체로 전달되어짐.
     }
   });
 });
