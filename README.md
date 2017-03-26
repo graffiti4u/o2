@@ -131,3 +131,4 @@
 129. CRUD + Auth - mysql 2 (Auth route)
 130. CRUD + Auth - mysql 3 (Auth config)
 131. CRUD + Auth - mysql 4 (CRUD views)
+132. CRUD + Auth - mysql 5 (CRUD route)
