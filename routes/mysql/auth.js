@@ -1,5 +1,8 @@
 //* /auth로 시작하는 라우터들의 관리
 module.exports = function(passport){
+  var bkfd2Password = require("pbkdf2-password");
+  var hasher = bkfd2Password();
+  var conn = require('../../config/mysql/db')();
   var route = require('express').Router();
 
   route.get('/logout', function(req, res){
