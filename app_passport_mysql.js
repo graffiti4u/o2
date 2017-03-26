@@ -46,6 +46,10 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.locals.pretty = true;
+app.set('views', './views/mysql');
+app.set('view engine', 'jade');
+
 app.get('/count', function(req, res){
   if(req.session.count) {
     req.session.count++;
@@ -112,24 +116,7 @@ app.post('/auth/register', function(req, res){
 });
 
 app.get('/auth/register', function(req, res) {
-  var output = `
-    <h1>Register</h1>
-    <form action="/auth/register" method="post">
-      <p>
-        <input type="text" name="username" placeholder="username">
-      </p>
-      <p>
-        <input type="password" name="password" placeholder="password">
-      </p>
-      <p>
-        <input type="text" name="displayName" placeholder="displayName">
-      </p>
-      <p>
-        <input type="submit">
-      </p>
-    </form>
-  `;
-  res.send(output);
+  res.render('auth/register');
 });
 
 // 6. 5번과정의 done함수가 실행되면 다음으로 session 설정과정 진행.
@@ -261,22 +248,7 @@ app.get(
 );
 
 app.get('/auth/login', function(req, res){
-  var output = `
-    <h1>Login</h1>
-    <form action="/auth/login" method="post">
-      <p>
-        <input type="text" name="username" placeholder="username">
-      </p>
-      <p>
-        <input type="password" name="password" placeholder="password">
-      </p>
-      <p>
-        <input type="submit">
-      </p>
-    </form>
-    <a href="/auth/facebook">facebook</a>
-  `;
-  res.send(output);
+  res.render('auth/login');
 });
 
 app.listen(3000, function(){

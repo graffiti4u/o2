@@ -127,3 +127,4 @@
 125. Routes separate 1
 126. Routes separate 2
 127. Routes separate 3
+128. CRUD + Auth - mysql 1 (Auth views)
