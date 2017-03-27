@@ -12,17 +12,7 @@ var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var FacebookStrategy = require('passport-facebook').Strategy;
 
-// 사용자 관리를 데이터베이스로 관리하기 위해 orientdb 설정.
-var OrientDB = require('orientjs');
-
-var server = OrientDB({
-  host: 'localhost',
-  port: 2424,
-  username: 'root',
-  password: process.env.Orient_DB // 비밀번호 같은경우 설정파일을 따로 만들어 로딩하거나 환경변수로 처리해서 보안에 유의해야 한다.
-});
-
-var db = server.use('o2');  // DB를 지정해 준다.
+var db = require('./config/orientdb/db')();
 
 var app = express();
 
@@ -60,14 +50,6 @@ app.get('/count', function(req, res){
   // req.session 에 의해 클라이언트의 쿠키에 connect.pid라는 쿠키변수가 저장되고 이 정보에 의해 서버접속시 쿠키변수값과 동일한 쿠키정보를 서버에서 찾아 데이터를 활용하게 됨.
 });
 
-app.get('/auth/logout', function(req, res){
-  // 9. logout 되었을 때 passport에서 지원되는 메서드로 사용.
-  req.logout();
-  req.session.save(function(){ // 로그아웃에 의해 세션데이터를 없애는 작업이 save 되면 실행되게 설정.
-    res.redirect('/welcome');
-  });
-});
-
 app.get('/welcome', function(req, res){
   // 로그인에 성공한 상태와 로그인에 실패한 상태를 구분해 처리
   // 세션정보 확인으로 로그인 되어진 유져의 개인 정보페이지를 구현할 수 있다.
@@ -100,37 +82,6 @@ var users = [
     displayName: 'Egoing'
   }
 ];
-
-app.post('/auth/register', function(req, res){
-  hasher({password: req.body.password}, function(err, pass, salt, hash){
-    var user = {
-      // 패이스북 구조와 동일하게 만들기 위해 속성 추가.
-      authId: 'local:' + req.body.username,
-      username: req.body.username,
-      password: hash,
-      salt: salt,
-      displayName: req.body.displayName
-    };
-    var sql = 'INSERT INTO user(authId, username, password, salt, displayName) VALUES (:authId, :username, :password, :salt, :displayName)';
-    db.query(sql, {
-      params: user
-    }).then(function(results){
-      //8. 회원가입과 동시에 로그인되어진 상태로 만들어주기 위해 passport방식의 코딩을 한다.
-      req.login(user, function(err){
-        req.session.save(function(){
-          res.redirect('/welcome');
-        });
-      });
-    }, function(error){ //프라미스에서는 첫번째 함수는 이전 처리가 정상적으로 마무리되었을 때 실행되고 만약 에러가 발생하면 두번째 함수가 실행되게 함.
-      console.log(error);
-      res.status(500);
-    });
-  });
-});
-
-app.get('/auth/register', function(req, res) {
-  res.render('auth/register');
-});
 
 // 6. 5번과정의 done함수가 실행되면 다음으로 session 설정과정 진행.
 // 5과정에서 실행되어지는 done(null, user) 메서드에 의해 전달되어지는 user객체를 콜백함수에서 그대로 사용할 수 있다.
@@ -221,43 +172,8 @@ passport.use(new FacebookStrategy({
   }
 ));
 
-// 3. 기존의 콜백함수 대신 미들웨어를 사용하여 passport에게 위임하는 코드 설정.
-app.post(
-  '/auth/login',
-  passport.authenticate(
-    'local',  // local 전략(strategy)이 실행되게 됨
-    { successRedirect: '/welcome',
-      failureRedirect: '/auth/login',
-      failureFlash: false //인증실패에 대한 정보를 사용자에게 메시지를 보여주고자 할때 true 사용
-      // LocalStrategy 과정에서 done()메서드의 실패시 done(null, false) 메시지를 추가할 수 있는데 그 메시지를 다음 페이지로 함께 보내고자 할 때 true 사용한다. ex. done(null, false, {message:'Incorrect username'})
-    }
-  ));
-
-// f1. 라우팅을 받을
-app.get(
-  '/auth/facebook',
-  passport.authenticate(
-    'facebook',
-    // 페이스북의 다른 정보를 더 가져오고 싶을때 scope를 사용
-    {scope: 'email'}
-  )
-);
-
-// f3. 미들웨어에서 인증절차를 마치면 실행될 라우팅
-app.get(
-  '/auth/facebook/callback',
-  passport.authenticate(
-    'facebook',
-    {
-      successRedirect: '/Welcome',
-      failureRedirect: '/auth/login'
-    }
-  )
-);
-
-app.get('/auth/login', function(req, res){
-  res.render('auth/login');
-});
+var auth = require('./routes/orientdb/auth')(passport);
+app.use('/auth', auth);
 
 app.listen(3000, function(){
   console.log('Example app listening on port 3000!');
