@@ -26,7 +26,7 @@ var db = server.use('o2');  // DB를 지정해 준다.
 var app = express();
 
 app.locals.pretty = true;
-app.set('views', './views_orientdb');
+app.set('views', './views/orientdb');
 app.set('view engine', 'jade');
 
 app.use(bodyParser.urlencoded({ extended: false}));
@@ -42,7 +42,7 @@ app.post('/upload', upload.single('userfile'), function(req, res){
 app.get('/topic/add', function(req, res){
   var sql = 'SELECT FROM topic';
   db.query(sql).then(function(topics){
-    res.render('add', {topics:topics});
+    res.render('topic/add', {topics:topics});
   });
 });
 app.post('/topic/add', function(req, res){
@@ -69,7 +69,7 @@ app.get('/topic/:id/delete', function(req, res){
     db.query(sql, {params:{rid:id}}).then(function(topic){
       console.log(topic[0]);
       // id값에 해당되는 하나의 레코드를 호출했는데 레코드 자체가 배열로 만들어진 객체이므로 배열의 첫번째 요소를 잡아내기위해(객체) topic[0]으로 처리.
-      res.render('delete', {topics:topics, topic:topic[0]});
+      res.render('topic/delete', {topics:topics, topic:topic[0]});
     });
   });
 });
@@ -92,7 +92,7 @@ app.get('/topic/:id/edit', function(req, res){
     db.query(sql, {params:{rid:id}}).then(function(topic){
       console.log(topic[0]);
       // id값에 해당되는 하나의 레코드를 호출했는데 레코드 자체가 배열로 만들어진 객체이므로 배열의 첫번째 요소를 잡아내기위해(객체) topic[0]으로 처리.
-      res.render('edit', {topics:topics, topic:topic[0]});
+      res.render('topic/edit', {topics:topics, topic:topic[0]});
     });
   });
 });
@@ -126,10 +126,10 @@ app.get(['/topic', '/topic/:id'], function(req, res){
       db.query(sql, {params:{rid:id}}).then(function(topic){
         console.log(topic[0]);
         // id값에 해당되는 하나의 레코드를 호출했는데 레코드 자체가 배열로 만들어진 객체이므로 배열의 첫번째 요소를 잡아내기위해(객체) topic[0]으로 처리.
-        res.render('view', {topics:topics, topic:topic[0]});
+        res.render('topic/view', {topics:topics, topic:topic[0]});
       });
     } else {
-      res.render('view', {topics:topics});
+      res.render('topic/view', {topics:topics});
     }
   });
 });

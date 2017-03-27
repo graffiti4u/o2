@@ -1,0 +1,15 @@
+extends ../layout
+block content
+  article
+    - rid = encodeURIComponent(topic['@rid']);
+    //- 편집한 정보를 추가하는 경로를 만들어주자.
+    form(action='/topic/'+rid+'/edit' method='post')
+      p
+        input(type='text' name='title' placeholder='title' value=topic.title)
+      p
+        textarea(name='description' placeholder='description') 
+          =topic.description
+      p
+        input(type='text' name='author' placeholder='author' value=topic.author)
+      p
+        input(type='submit')

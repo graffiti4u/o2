@@ -1,0 +1,10 @@
+extends ../layout
+block content
+  article
+    h1= 'Delete? ' + topic.title
+    - rid = encodeURIComponent(topic['@rid']);
+    //- 삭제버튼 클릭시 링크로 안하고 post방식으로 한 이유는 검색엔진 같은경우 크롤링시 링크를 타고 들어온다. 만약 삭제에 대한 기능이 링크로 만들어질 시 검색엔진이 들어와서 접속하게되면 삭제명령이 적용되어져 버린다.
+    form(action='/topic/'+rid+'/delete' method='post')
+      p
+        input(type='submit' value='YES')
+    a(href='/topic/' + rid) No
