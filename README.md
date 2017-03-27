@@ -133,3 +133,4 @@
 131. CRUD + Auth - mysql 4 (CRUD views)
 132. CRUD + Auth - mysql 5 (CRUD route)
 133. CRUD + Auth - mysql 6
+114. CRUD + Auth - orientdb 1 (Auth views)
