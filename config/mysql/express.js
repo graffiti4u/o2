@@ -6,7 +6,11 @@ module.exports = function(){
 
   var app = express();
 
+  app.locals.pretty = true;
+  app.set('views', './views/mysql');
+  app.set('view engine', 'jade');
   app.use(bodyParser.urlencoded({ extended: false}));
+
   app.use(session({
     secret: 'jkdk3$6@#%&kdfkj#@4590fd',
     resave: false,
@@ -24,10 +28,5 @@ module.exports = function(){
     // saveUninitialized – 세션이 저장되기 전에 uninitialized 상태로 미리 만들어서 저장합니다.
     // , cookie: { secure: true } proxy를 이용한 https 프로토콜을 사용시 세션을 이용하는 방법 추후 스터디.
   }));
-
-  app.locals.pretty = true;
-  app.set('views', './views/mysql');
-  app.set('view engine', 'jade');
-
   return app;
 };

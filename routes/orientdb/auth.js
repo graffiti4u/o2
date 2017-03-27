@@ -8,7 +8,7 @@ module.exports = function(passport){
     // 9. logout 되었을 때 passport에서 지원되는 메서드로 사용.
     req.logout();
     req.session.save(function(){ // 로그아웃에 의해 세션데이터를 없애는 작업이 save 되면 실행되게 설정.
-      res.redirect('/welcome');
+      res.redirect('/topic');
     });
   });
 
@@ -29,7 +29,7 @@ module.exports = function(passport){
         //8. 회원가입과 동시에 로그인되어진 상태로 만들어주기 위해 passport방식의 코딩을 한다.
         req.login(user, function(err){
           req.session.save(function(){
-            res.redirect('/welcome');
+            res.redirect('/topic');
           });
         });
       }, function(error){ //프라미스에서는 첫번째 함수는 이전 처리가 정상적으로 마무리되었을 때 실행되고 만약 에러가 발생하면 두번째 함수가 실행되게 함.
@@ -40,7 +40,10 @@ module.exports = function(passport){
   });
 
   route.get('/register', function(req, res) {
-    res.render('auth/register');
+    var sql = 'SELECT FROM topic';
+    db.query(sql).then(function(topics){
+    res.render('auth/register', {topics:topics});
+    });
   });
 
   // 3. 기존의 콜백함수 대신 미들웨어를 사용하여 passport에게 위임하는 코드 설정.
@@ -48,7 +51,7 @@ module.exports = function(passport){
     '/login',
     passport.authenticate(
       'local',  // local 전략(strategy)이 실행되게 됨
-      { successRedirect: '/welcome',
+      { successRedirect: '/topic',
         failureRedirect: '/auth/login',
         failureFlash: false //인증실패에 대한 정보를 사용자에게 메시지를 보여주고자 할때 true 사용
         // LocalStrategy 과정에서 done()메서드의 실패시 done(null, false) 메시지를 추가할 수 있는데 그 메시지를 다음 페이지로 함께 보내고자 할 때 true 사용한다. ex. done(null, false, {message:'Incorrect username'})
@@ -71,14 +74,17 @@ module.exports = function(passport){
     passport.authenticate(
       'facebook',
       {
-        successRedirect: '/Welcome',
+        successRedirect: '/topic',
         failureRedirect: '/auth/login'
       }
     )
   );
 
   route.get('/login', function(req, res){
-    res.render('auth/login');
+    var sql = 'SELECT FROM topic';
+    db.query(sql).then(function(topics){
+    res.render('auth/login', {topics:topics});
+    });
   });
 
   return route;

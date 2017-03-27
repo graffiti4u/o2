@@ -138,3 +138,4 @@
 136. CRUD + Auth - orientdb 3 (Auth config)
 137. CRUD + Auth - orientdb 4 (CRUD views)
 138. CRUD + Auth - orientdb 5 (CRUD routes)
+139. CRUD + Auth - orientdb 6 (final)

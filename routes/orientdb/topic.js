@@ -92,7 +92,7 @@ module.exports = function(){
           res.render('topic/view', {topics:topics, topic:topic[0]});
         });
       } else {
-        res.render('topic/view', {topics:topics});
+        res.render('topic/view', {topics:topics, user:req.user});
       }
     });
   });
